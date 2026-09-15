@@ -206,6 +206,19 @@ async function jumpToDemoStep(step) {
     `;
     staleAlert.style.display = "none";
     commitBox.style.display = "block";
+    
+    // Sequential illumination of the 4-phase commit gate
+    const commitPills = ['pill-speculate', 'pill-prepare', 'pill-confirm', 'pill-commit'];
+    commitPills.forEach((id, idx) => {
+      const el = document.getElementById(id);
+      if (el) {
+        el.classList.remove('illuminated');
+        setTimeout(() => {
+          el.classList.add('illuminated');
+        }, (idx + 1) * 200);
+      }
+    });
+
     nextBtn.innerText = "✓ Demo Completed (Click to Replay)";
     nextBtn.onclick = () => jumpToDemoStep(1);
 
@@ -349,7 +362,162 @@ function stepReplay(delta) {
   }
 }
 
+// -------------------------------------------------------------
+// 1. HERO CANVAS: SUBTLE ANIMATED DATA-FLOW BACKGROUND
+// -------------------------------------------------------------
+function initHeroCanvasAnimation() {
+  const canvas = document.getElementById('hero-canvas');
+  if (!canvas) return;
+
+  const ctx = canvas.getContext('2d');
+  let animationFrameId;
+  let width, height;
+
+  function resize() {
+    width = canvas.width = window.innerWidth;
+    height = canvas.height = Math.min(600, window.innerHeight * 0.7);
+  }
+
+  window.addEventListener('resize', resize);
+  resize();
+
+  // Create faint horizontal data streams
+  const streamCount = 5;
+  const particles = [];
+
+  for (let i = 0; i < 28; i++) {
+    particles.push({
+      x: Math.random() * (width || 1200),
+      streamIndex: Math.floor(Math.random() * streamCount),
+      speed: 0.4 + Math.random() * 0.6,
+      radius: 1 + Math.random() * 1.5,
+      alpha: 0.15 + Math.random() * 0.35
+    });
+  }
+
+  function getStreamY(streamIdx, xPos) {
+    const baseY = 80 + streamIdx * ((height - 140) / (streamCount - 1 || 1));
+    const wave = Math.sin(xPos * 0.003 + streamIdx) * 18;
+    return baseY + wave;
+  }
+
+  let lastTime = 0;
+  function animate(timestamp) {
+    if (!lastTime) lastTime = timestamp;
+    const delta = timestamp - lastTime;
+    lastTime = timestamp;
+
+    ctx.clearRect(0, 0, width, height);
+
+    // Draw faint guide curves
+    for (let s = 0; s < streamCount; s++) {
+      ctx.beginPath();
+      ctx.strokeStyle = 'rgba(6, 182, 212, 0.035)';
+      ctx.lineWidth = 1;
+      for (let x = 0; x < width; x += 30) {
+        const y = getStreamY(s, x);
+        if (x === 0) ctx.moveTo(x, y);
+        else ctx.lineTo(x, y);
+      }
+      ctx.stroke();
+    }
+
+    // Draw and move data particles
+    particles.forEach(p => {
+      p.x += p.speed * (delta / 16);
+      if (p.x > width + 20) p.x = -20;
+
+      const y = getStreamY(p.streamIndex, p.x);
+
+      ctx.beginPath();
+      ctx.arc(p.x, y, p.radius, 0, Math.PI * 2);
+      ctx.fillStyle = `rgba(6, 182, 212, ${p.alpha})`;
+      ctx.shadowBlur = 6;
+      ctx.shadowColor = 'rgba(6, 182, 212, 0.4)';
+      ctx.fill();
+      ctx.shadowBlur = 0;
+    });
+
+    animationFrameId = requestAnimationFrame(animate);
+  }
+
+  // Respect prefers-reduced-motion
+  const mediaQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
+  if (!mediaQuery || !mediaQuery.matches) {
+    animationFrameId = requestAnimationFrame(animate);
+  }
+}
+
+// -------------------------------------------------------------
+// 2. SCROLL OBSERVERS & NUMBER COUNT-UP ANIMATION
+// -------------------------------------------------------------
+function initScrollObservers() {
+  const sections = document.querySelectorAll('.section');
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('visible');
+      }
+    });
+  }, { threshold: 0.08 });
+
+  sections.forEach(s => observer.observe(s));
+
+  // Animate counter in Hero section
+  const counterEl = document.getElementById('hero-executions-counter');
+  if (counterEl) {
+    let counted = false;
+    const countObserver = new IntersectionObserver((entries) => {
+      if (entries[0].isIntersecting && !counted) {
+        counted = true;
+        animateNumber(counterEl, 0, 2000, 1400);
+      }
+    }, { threshold: 0.3 });
+    countObserver.observe(counterEl);
+  }
+}
+
+function animateNumber(element, start, end, duration) {
+  const startTime = performance.now();
+  function update(now) {
+    const elapsed = now - startTime;
+    const progress = Math.min(elapsed / duration, 1);
+    // Ease out cubic
+    const eased = 1 - Math.pow(1 - progress, 3);
+    const current = Math.floor(start + (end - start) * eased);
+    element.innerText = current.toLocaleString();
+    if (progress < 1) {
+      requestAnimationFrame(update);
+    } else {
+      element.innerText = end.toLocaleString();
+    }
+  }
+  requestAnimationFrame(update);
+}
+
+// -------------------------------------------------------------
+// 3. ARCHITECTURE PIPELINE STAGE RUNNER
+// -------------------------------------------------------------
+function initArchPulseCycle() {
+  const totalNodes = 7;
+  let currentActive = 1;
+
+  setInterval(() => {
+    for (let i = 1; i <= totalNodes; i++) {
+      const node = document.getElementById(`arch-node-${i}`);
+      if (node) {
+        if (i === currentActive) node.classList.add('active-stage');
+        else node.classList.remove('active-stage');
+      }
+    }
+    currentActive = (currentActive % totalNodes) + 1;
+  }, 2200);
+}
+
 // Initial start
 window.addEventListener('DOMContentLoaded', () => {
   initSSE();
+  initHeroCanvasAnimation();
+  initScrollObservers();
+  initArchPulseCycle();
 });

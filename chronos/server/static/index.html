@@ -8,6 +8,9 @@
 </head>
 <body>
 
+  <!-- Subtle Animated Data-Flow Background Canvas -->
+  <canvas id="hero-canvas"></canvas>
+
   <!-- Navigation Bar -->
   <nav class="nav-header">
     <div class="container nav-container">
@@ -75,29 +78,33 @@
         <!-- Naive Agent Failure -->
         <div class="comparison-card bad">
           <div class="card-badge bad">✕ Naive Unversioned Agent</div>
-          <div class="flow-step">1. User requests flight to Delhi</div>
-          <div class="flow-arrow">↓</div>
-          <div class="flow-step">2. Tool search_flights(Delhi) begins executing</div>
-          <div class="flow-arrow">↓</div>
-          <div class="flow-step">3. User interrupts: "Actually Mumbai"</div>
-          <div class="flow-arrow">↓</div>
-          <div class="flow-step" style="border-color: var(--brand-rose); color: var(--brand-rose);">4. Late Delhi result arrives out-of-order</div>
-          <div class="flow-arrow">↓</div>
-          <div class="flow-step" style="background: rgba(244, 63, 94, 0.1); font-weight: 700; color: var(--brand-rose);">5. STALE STATE: Books wrong Delhi flight!</div>
+          <div class="animated-flow-container">
+            <div class="flow-step">1. User requests flight to Delhi</div>
+            <div class="flow-arrow">↓</div>
+            <div class="flow-step">2. Tool search_flights(Delhi) begins executing</div>
+            <div class="flow-arrow">↓</div>
+            <div class="flow-step">3. User interrupts: "Actually Mumbai"</div>
+            <div class="flow-arrow">↓</div>
+            <div class="flow-step" style="border-color: var(--brand-rose); color: var(--brand-rose);">4. Late Delhi result arrives out-of-order</div>
+            <div class="flow-arrow">↓</div>
+            <div class="flow-step highlight-pulse-bad" style="font-weight: 700;">5. STALE STATE: Books wrong Delhi flight!</div>
+          </div>
         </div>
 
         <!-- CHRONOS Solution -->
         <div class="comparison-card good">
           <div class="card-badge good">✓ CHRONOS Control Plane</div>
-          <div class="flow-step">1. Intent tagged with Snapshot v1 (Delhi)</div>
-          <div class="flow-arrow">↓</div>
-          <div class="flow-step">2. Tool search_flights(v1) dispatched</div>
-          <div class="flow-arrow">↓</div>
-          <div class="flow-step">3. Interruption creates Snapshot v2 (Mumbai)</div>
-          <div class="flow-arrow">↓</div>
-          <div class="flow-step" style="border-color: var(--brand-emerald); color: var(--brand-emerald);">4. Late v1 result rejected as STALE (v1 ≠ v2)</div>
-          <div class="flow-arrow">↓</div>
-          <div class="flow-step" style="background: rgba(16, 185, 129, 0.1); font-weight: 700; color: var(--brand-emerald);">5. SAFE COMMIT: Exactly one Mumbai booking!</div>
+          <div class="animated-flow-container">
+            <div class="flow-step">1. Intent tagged with Snapshot v1 (Delhi)</div>
+            <div class="flow-arrow">↓</div>
+            <div class="flow-step">2. Tool search_flights(v1) dispatched</div>
+            <div class="flow-arrow">↓</div>
+            <div class="flow-step">3. Interruption creates Snapshot v2 (Mumbai)</div>
+            <div class="flow-arrow">↓</div>
+            <div class="flow-step" style="border-color: var(--brand-emerald); color: var(--brand-emerald);">4. Late v1 result rejected as STALE (v1 ≠ v2)</div>
+            <div class="flow-arrow">↓</div>
+            <div class="flow-step highlight-pulse-good" style="font-weight: 700;">5. SAFE COMMIT: Exactly one Mumbai booking!</div>
+          </div>
         </div>
       </div>
     </section>
@@ -163,21 +170,43 @@
               </div>
             </div>
 
+            <!-- Shield Barrier Alert Box (Phase 3) -->
             <div id="demo-stale-alert-area" style="display: none;">
               <div class="stale-alert-box">
-                <div class="stale-alert-title">⚠ STALE RESULT REJECTED</div>
-                <div class="stale-alert-desc">
-                  Result belongs to obsolete snapshot <strong>v1</strong>.<br>
-                  Current active state is snapshot <strong>v2</strong>.<br>
-                  <span style="color: var(--brand-emerald); font-weight: 600;">✓ Current state remains unpolluted.</span>
+                <svg class="barrier-shield-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+                  <polyline points="9 12 11 14 15 10"/>
+                </svg>
+                <div>
+                  <div class="stale-alert-title">
+                    <span>SHIELD BARRIER: STALE RESULT REJECTED</span>
+                  </div>
+                  <div class="stale-alert-desc">
+                    Result belongs to obsolete snapshot <strong>v1</strong>.<br>
+                    Current active state is snapshot <strong>v2</strong>.<br>
+                    <span style="color: var(--brand-emerald); font-weight: 600;">✓ State mutation strictly blocked. Current state remains clean.</span>
+                  </div>
                 </div>
               </div>
             </div>
 
+            <!-- Guarded Commit Box with 4-Phase Pipeline (Phase 4) -->
             <div id="demo-commit-box" style="margin-top: 12px; display: none;">
-              <div style="padding: 12px; background: rgba(16, 185, 129, 0.08); border: 1px solid var(--brand-emerald); border-radius: 8px;">
-                <div style="color: var(--brand-emerald); font-weight: 700; font-size: 0.85rem;">✓ COMMITTED ONCE</div>
-                <div style="font-size: 0.75rem; color: var(--text-secondary);">Idempotency key verified: idem_book_flight_... exactly one booking.</div>
+              <div style="padding: 14px; background: rgba(16, 185, 129, 0.08); border: 1px solid var(--brand-emerald); border-radius: 8px;">
+                <div style="color: var(--brand-emerald); font-weight: 700; font-size: 0.85rem; display: flex; align-items: center; gap: 6px;">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><polyline points="9 12 11 14 15 10"/></svg>
+                  <span>✓ COMMITTED ONCE (VERIFIED)</span>
+                </div>
+                <div style="font-size: 0.775rem; color: var(--text-secondary); margin-top: 4px;">
+                  Idempotency Key: <code>idem_book_flight_...</code> confirmed · Exactly one irreversible transaction.
+                </div>
+                <!-- 4-Phase Commit Sequential Pipeline Visual -->
+                <div class="commit-stages-row">
+                  <div class="commit-stage-pill" id="pill-speculate">1. SPECULATE</div>
+                  <div class="commit-stage-pill" id="pill-prepare">2. PREPARE</div>
+                  <div class="commit-stage-pill" id="pill-confirm">3. CONFIRM</div>
+                  <div class="commit-stage-pill" id="pill-commit">4. COMMIT</div>
+                </div>
               </div>
             </div>
 
@@ -195,24 +224,50 @@
 
       <div class="principles-grid">
         <div class="principle-card">
+          <div class="principle-icon-wrapper">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <polygon points="12 2 2 7 12 12 22 7 12 2"/>
+              <polyline points="2 17 12 22 22 17"/>
+              <polyline points="2 12 12 17 22 12"/>
+            </svg>
+          </div>
           <div class="principle-number">01</div>
           <div class="principle-title">Version, Don't Overwrite</div>
           <div class="principle-desc">Every intent change creates a new immutable state snapshot (v1 → v2 → v3). Historical snapshots are never mutated.</div>
         </div>
 
         <div class="principle-card">
+          <div class="principle-icon-wrapper">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="12" r="10"/>
+              <line x1="4.93" y1="4.93" x2="19.07" y2="19.07"/>
+            </svg>
+          </div>
           <div class="principle-number">02</div>
           <div class="principle-title">Cancel Selectively</div>
           <div class="principle-desc">Only invalid work is cancelled. Reusable upstream computation and unaffected subtrees survive across updates.</div>
         </div>
 
         <div class="principle-card">
+          <div class="principle-icon-wrapper">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="12" r="10"/>
+              <polyline points="12 6 12 12 16 14"/>
+              <path d="M18 18l4 4"/>
+            </svg>
+          </div>
           <div class="principle-number">03</div>
           <div class="principle-title">Reject Stale Results</div>
           <div class="principle-desc">Every tool result is stamped with its origin snapshot ID. Late results from obsolete versions are discarded before state mutation.</div>
         </div>
 
         <div class="principle-card">
+          <div class="principle-icon-wrapper">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+              <polyline points="9 12 11 14 15 10"/>
+            </svg>
+          </div>
           <div class="principle-number">04</div>
           <div class="principle-title">Guard the Commit</div>
           <div class="principle-desc">Irreversible actions require triple verification: active snapshot binding, explicit confirmation, and idempotency deduplication.</div>
@@ -228,33 +283,44 @@
       <p class="section-subtitle">CHRONOS invalidates only the affected dependency subtree instead of restarting the entire workflow.</p>
 
       <div class="dag-container">
-        <div style="margin-bottom: 20px;">
-          <span style="font-size: 0.85rem; color: var(--text-secondary);">Scenario: User changes selection criterion from <strong>"Cheapest"</strong> to <strong>"Earliest"</strong></span>
+        <div style="margin-bottom: 24px;">
+          <span style="font-size: 0.9rem; color: var(--text-secondary);">Scenario: User changes selection criterion from <strong>"Cheapest"</strong> to <strong>"Earliest"</strong></span>
         </div>
 
-        <div class="dag-flow">
+        <div class="dag-flow-wrapper">
           <div class="dag-node valid">
-            <span>SEARCH</span>
-            <span style="font-size: 0.7rem; color: var(--brand-emerald);">✓ PRESERVED (REUSED)</span>
+            <span style="font-weight: 700; color: #fff;">SEARCH</span>
+            <span style="font-size: 0.725rem; color: var(--brand-emerald);">✓ PRESERVED (REUSED)</span>
           </div>
-          <div class="dag-arrow">➔</div>
+          <svg class="dag-arrow-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/>
+          </svg>
           <div class="dag-node valid">
-            <span>FILTER</span>
-            <span style="font-size: 0.7rem; color: var(--brand-emerald);">✓ PRESERVED (REUSED)</span>
+            <span style="font-weight: 700; color: #fff;">FILTER</span>
+            <span style="font-size: 0.725rem; color: var(--brand-emerald);">✓ PRESERVED (REUSED)</span>
           </div>
-          <div class="dag-arrow">➔</div>
+          <svg class="dag-arrow-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/>
+          </svg>
           <div class="dag-node invalidated">
-            <span>SELECT</span>
-            <span style="font-size: 0.7rem; color: var(--brand-rose);">✕ INVALIDATED</span>
+            <span style="font-weight: 700; color: #fff;">SELECT</span>
+            <span style="font-size: 0.725rem; color: var(--brand-rose);">✕ INVALIDATED</span>
           </div>
-          <div class="dag-arrow">➔</div>
+          <svg class="dag-arrow-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/>
+          </svg>
           <div class="dag-node blocked">
-            <span>BOOK</span>
-            <span style="font-size: 0.7rem; color: var(--text-muted);">🔒 BLOCKED</span>
+            <span style="font-weight: 700; color: #fff;">BOOK</span>
+            <span style="font-size: 0.725rem; color: var(--text-muted);">🔒 BLOCKED</span>
           </div>
         </div>
 
-        <div style="font-size: 0.85rem; color: var(--text-secondary); max-width: 700px; margin: 0 auto;">
+        <div class="independent-branch-badge">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="6" y1="3" x2="6" y2="21"/><circle cx="18" cy="6" r="3"/><circle cx="6" cy="18" r="3"/><path d="M18 9a9 9 0 0 1-9 9"/></svg>
+          <span>Branch Isolation: Independent subtrees execute concurrently without cancellation</span>
+        </div>
+
+        <div style="font-size: 0.85rem; color: var(--text-secondary); max-width: 720px; margin: 20px auto 0; line-height: 1.6;">
           Because the destination did not change, the expensive <code>SEARCH</code> and <code>FILTER</code> results are preserved, while only the downstream <code>SELECT</code> and <code>BOOK</code> nodes are recalculated.
         </div>
       </div>
@@ -268,31 +334,86 @@
       <p class="section-subtitle">The implementation is designed around mathematical invariants rather than relying on probabilistic LLM behavior.</p>
 
       <div class="invariants-list">
+        <!-- INV-1 -->
         <div class="invariant-row">
+          <div class="inv-icon-cell">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+              <line x1="9" y1="9" x2="15" y2="15"/><line x1="15" y1="9" x2="9" y2="15"/>
+            </svg>
+          </div>
           <span class="inv-id">INV-1</span>
           <span class="inv-text">Stale results cannot mutate active intent slots or completed state.</span>
         </div>
+
+        <!-- INV-2 -->
         <div class="invariant-row">
+          <div class="inv-icon-cell">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/>
+            </svg>
+          </div>
           <span class="inv-id">INV-2</span>
           <span class="inv-text">Only the current active snapshot can commit irreversible actions.</span>
         </div>
+
+        <!-- INV-3 -->
         <div class="invariant-row">
+          <div class="inv-icon-cell">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="7.5" cy="15.5" r="4.5"/>
+              <path d="M10.5 12.5L21 2l2 2-2 2-2-2-2 2-2-2-1.5 1.5"/>
+            </svg>
+          </div>
           <span class="inv-id">INV-3</span>
           <span class="inv-text">One idempotency key permits at most one irreversible commit.</span>
         </div>
+
+        <!-- INV-4 -->
         <div class="invariant-row">
+          <div class="inv-icon-cell">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="18" cy="18" r="3"/><circle cx="6" cy="6" r="3"/><circle cx="18" cy="6" r="3"/>
+              <path d="M6 9v3a3 3 0 0 0 3 3h6"/><path d="M18 9v9"/>
+            </svg>
+          </div>
           <span class="inv-id">INV-4</span>
           <span class="inv-text">Invalidation of an upstream dependency invalidates all dependent downstream work.</span>
         </div>
+
+        <!-- INV-5 -->
         <div class="invariant-row">
+          <div class="inv-icon-cell">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <line x1="6" y1="3" x2="6" y2="21"/><circle cx="18" cy="6" r="3"/><circle cx="6" cy="18" r="3"/>
+              <path d="M18 9a9 9 0 0 1-9 9"/>
+            </svg>
+          </div>
           <span class="inv-id">INV-5</span>
           <span class="inv-text">Superseded branches cannot execute new state-changing writes.</span>
         </div>
+
+        <!-- INV-6 -->
         <div class="invariant-row">
+          <div class="inv-icon-cell">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
+              <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+            </svg>
+          </div>
           <span class="inv-id">INV-6</span>
           <span class="inv-text">Unconfirmed irreversible actions are strictly blocked from execution.</span>
         </div>
+
+        <!-- INV-7 -->
         <div class="invariant-row">
+          <div class="inv-icon-cell">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <polygon points="12 2 2 7 12 12 22 7 12 2"/>
+              <polygon points="2 17 12 22 22 17 12 12 2 17"/>
+              <polygon points="2 7 2 17 12 12 12 2 2 7"/>
+            </svg>
+          </div>
           <span class="inv-id">INV-7</span>
           <span class="inv-text">Historical state snapshots are strictly immutable.</span>
         </div>
@@ -378,8 +499,51 @@
       <h2 class="section-title">Control-plane overhead</h2>
       <p class="section-subtitle">Local control-plane microbenchmarks (N = 1,000 iterations). CHRONOS adds negligible overhead to the critical execution path.</p>
 
-      <div style="display: flex; justify-content: flex-end; margin-bottom: 12px;">
+      <div style="display: flex; justify-content: flex-end; margin-bottom: 16px;">
         <button class="btn btn-secondary" onclick="measureLiveOverhead()">⚡ Re-measure Live Latency</button>
+      </div>
+
+      <!-- Animated Latency Progress Visual Bars -->
+      <div class="perf-bar-container" style="margin-bottom: 24px;">
+        <div class="perf-bar-row">
+          <div class="perf-bar-header">
+            <span style="color: var(--brand-cyan);">Fast-Path Acknowledgment</span>
+            <span id="bar-val-ack" style="font-family: var(--font-mono); font-weight: 700;">10 µs (0.010 ms)</span>
+          </div>
+          <div class="perf-track">
+            <div class="perf-fill cyan" id="fill-ack" style="width: 12%;"></div>
+          </div>
+        </div>
+
+        <div class="perf-bar-row">
+          <div class="perf-bar-header">
+            <span style="color: var(--brand-amber);">Interruption ➔ Cancellation Propagation</span>
+            <span id="bar-val-cancel" style="font-family: var(--font-mono); font-weight: 700;">150 µs (0.150 ms)</span>
+          </div>
+          <div class="perf-track">
+            <div class="perf-fill amber" id="fill-cancel" style="width: 65%;"></div>
+          </div>
+        </div>
+
+        <div class="perf-bar-row">
+          <div class="perf-bar-header">
+            <span style="color: var(--brand-indigo);">Snapshot Evolution</span>
+            <span id="bar-val-snap" style="font-family: var(--font-mono); font-weight: 700;">14 µs (0.014 ms)</span>
+          </div>
+          <div class="perf-track">
+            <div class="perf-fill indigo" id="fill-snap" style="width: 16%;"></div>
+          </div>
+        </div>
+
+        <div class="perf-bar-row">
+          <div class="perf-bar-header">
+            <span style="color: var(--brand-emerald);">Idempotency Key Check</span>
+            <span id="bar-val-idem" style="font-family: var(--font-mono); font-weight: 700;">1 µs (0.001 ms)</span>
+          </div>
+          <div class="perf-track">
+            <div class="perf-fill emerald" id="fill-idem" style="width: 5%;"></div>
+          </div>
+        </div>
       </div>
 
       <table class="perf-table">
@@ -432,20 +596,20 @@
       <h2 class="section-title">How CHRONOS works</h2>
       <p class="section-subtitle">Simplified execution pipeline decoupling fast control from asynchronous reasoning and tool execution.</p>
 
-      <div class="arch-diagram">
-        <div class="arch-node" style="border-color: var(--brand-blue);">USER SPEECH / TEXT / VISION</div>
+      <div class="arch-diagram" id="arch-pipeline-container">
+        <div class="arch-node" id="arch-node-1" style="border-color: var(--brand-blue);">USER SPEECH / TEXT / VISION</div>
         <div class="dag-arrow">↓</div>
-        <div class="arch-node" style="border-color: var(--brand-cyan);">PERCEPTION & STREAM DEBOUNCER</div>
+        <div class="arch-node" id="arch-node-2" style="border-color: var(--brand-cyan);">PERCEPTION & STREAM DEBOUNCER</div>
         <div class="dag-arrow">↓</div>
-        <div class="arch-node" style="border-color: var(--brand-indigo);">FAST CONTROL & FLOOR CONTROLLER</div>
+        <div class="arch-node" id="arch-node-3" style="border-color: var(--brand-indigo);">FAST CONTROL & FLOOR CONTROLLER</div>
         <div class="dag-arrow">↓</div>
-        <div class="arch-node" style="border-color: var(--brand-cyan); background: rgba(6, 182, 212, 0.05);">TEMPORAL STATE (IMMUTABLE SNAPSHOTS v1 → v2)</div>
+        <div class="arch-node" id="arch-node-4" style="border-color: var(--brand-cyan); background: rgba(6, 182, 212, 0.05);">TEMPORAL STATE (IMMUTABLE SNAPSHOTS v1 → v2)</div>
         <div class="dag-arrow">↓</div>
-        <div class="arch-node" style="border-color: var(--brand-amber);">DEPENDENCY DAG & ASYNC SCHEDULER</div>
+        <div class="arch-node" id="arch-node-5" style="border-color: var(--brand-amber);">DEPENDENCY DAG & ASYNC SCHEDULER</div>
         <div class="dag-arrow">↓</div>
-        <div class="arch-node" style="border-color: var(--brand-emerald); background: rgba(16, 185, 129, 0.05);">SAFETY / COMMIT CONTROLLER & IDEMPOTENCY</div>
+        <div class="arch-node" id="arch-node-6" style="border-color: var(--brand-emerald); background: rgba(16, 185, 129, 0.05);">SAFETY / COMMIT CONTROLLER & IDEMPOTENCY</div>
         <div class="dag-arrow">↓</div>
-        <div class="arch-node" style="border-color: var(--border-strong);">EXTERNAL TOOLS & TRANSACTION COMMIT</div>
+        <div class="arch-node" id="arch-node-7" style="border-color: var(--border-strong);">EXTERNAL TOOLS & TRANSACTION COMMIT</div>
       </div>
     </section>
 

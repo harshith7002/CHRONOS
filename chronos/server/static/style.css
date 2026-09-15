@@ -45,20 +45,21 @@ body {
   -webkit-font-smoothing: antialiased;
   padding-bottom: 100px;
   overflow-x: hidden;
+  position: relative;
 }
 
-/* Subtle background glow */
-body::before {
-  content: '';
+/* -------------------------------------------------------------
+   1. HERO CANVAS & FLOWING DATA-FLOW BACKGROUND
+   ------------------------------------------------------------- */
+#hero-canvas {
   position: absolute;
   top: 0;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 1000px;
-  height: 450px;
-  background: radial-gradient(circle, rgba(6, 182, 212, 0.08) 0%, rgba(59, 130, 246, 0.04) 40%, transparent 70%);
+  left: 0;
+  width: 100%;
+  height: 580px;
   pointer-events: none;
   z-index: 0;
+  opacity: 0.55;
 }
 
 .container {
@@ -74,10 +75,11 @@ body::before {
   position: sticky;
   top: 0;
   z-index: 100;
-  background: rgba(8, 9, 13, 0.85);
+  background: rgba(8, 9, 13, 0.88);
   backdrop-filter: blur(20px);
   border-bottom: 1px solid var(--border-subtle);
   padding: 16px 0;
+  transition: border-color 0.2s;
 }
 
 .nav-container {
@@ -140,7 +142,7 @@ body::before {
   color: #ffffff;
 }
 
-/* Buttons */
+/* Buttons & Micro-Interactions */
 .btn {
   display: inline-flex;
   align-items: center;
@@ -157,6 +159,10 @@ body::before {
   line-height: 1;
 }
 
+.btn:active {
+  transform: scale(0.98);
+}
+
 .btn-primary {
   background: #ffffff;
   color: #090a0f;
@@ -166,8 +172,8 @@ body::before {
 
 .btn-primary:hover {
   background: #f1f5f9;
-  transform: translateY(-1px);
-  box-shadow: 0 6px 20px rgba(255, 255, 255, 0.25);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 22px rgba(255, 255, 255, 0.25);
 }
 
 .btn-secondary {
@@ -179,6 +185,7 @@ body::before {
 .btn-secondary:hover {
   background: var(--bg-surface-hover);
   border-color: var(--brand-cyan);
+  transform: translateY(-1px);
 }
 
 .btn-accent {
@@ -189,6 +196,7 @@ body::before {
 
 .btn-accent:hover {
   background: rgba(6, 182, 212, 0.22);
+  transform: translateY(-1px);
 }
 
 .btn-danger {
@@ -201,10 +209,13 @@ body::before {
   background: rgba(244, 63, 94, 0.22);
 }
 
-/* Hero Section (First Viewport) */
+/* -------------------------------------------------------------
+   HERO SECTION & ENTRANCE ANIMATIONS
+   ------------------------------------------------------------- */
 .hero-section {
   padding: 70px 0 50px;
   text-align: center;
+  position: relative;
 }
 
 .hero-pill {
@@ -220,6 +231,8 @@ body::before {
   letter-spacing: 0.8px;
   color: var(--brand-cyan);
   margin-bottom: 22px;
+  opacity: 0;
+  animation: fadeSlideUp 0.6s ease 0.1s forwards;
 }
 
 .hero-pill-dot {
@@ -228,17 +241,25 @@ body::before {
   border-radius: 50%;
   background: var(--brand-cyan);
   box-shadow: 0 0 8px var(--brand-cyan);
+  animation: pulseDot 2s infinite ease-in-out;
+}
+
+@keyframes pulseDot {
+  0%, 100% { opacity: 0.6; transform: scale(0.9); }
+  50% { opacity: 1; transform: scale(1.2); }
 }
 
 .hero-title {
-  font-size: 4rem;
+  font-size: 4.25rem;
   font-weight: 800;
   letter-spacing: -2px;
   line-height: 1.05;
-  margin-bottom: 16px;
+  margin-bottom: 14px;
   background: linear-gradient(180deg, #ffffff 0%, #cbd5e1 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
+  opacity: 0;
+  animation: fadeSlideUp 0.7s cubic-bezier(0.16, 1, 0.3, 1) 0.2s forwards;
 }
 
 .hero-subtitle-tag {
@@ -247,6 +268,8 @@ body::before {
   color: var(--brand-cyan);
   margin-bottom: 12px;
   letter-spacing: -0.2px;
+  opacity: 0;
+  animation: fadeSlideUp 0.7s cubic-bezier(0.16, 1, 0.3, 1) 0.3s forwards;
 }
 
 .hero-statement {
@@ -256,6 +279,8 @@ body::before {
   margin: 0 auto 36px;
   font-weight: 400;
   line-height: 1.45;
+  opacity: 0;
+  animation: fadeSlideUp 0.7s cubic-bezier(0.16, 1, 0.3, 1) 0.4s forwards;
 }
 
 .hero-actions {
@@ -263,15 +288,19 @@ body::before {
   justify-content: center;
   gap: 14px;
   margin-bottom: 48px;
+  opacity: 0;
+  animation: fadeSlideUp 0.7s cubic-bezier(0.16, 1, 0.3, 1) 0.5s forwards;
 }
 
-/* 3 Proof Metrics Cards */
+/* Proof Bar */
 .proof-bar {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   gap: 16px;
   max-width: 860px;
   margin: 0 auto;
+  opacity: 0;
+  animation: fadeSlideUp 0.7s cubic-bezier(0.16, 1, 0.3, 1) 0.6s forwards;
 }
 
 .proof-card {
@@ -280,11 +309,13 @@ body::before {
   border-radius: 12px;
   padding: 22px 18px;
   text-align: center;
-  transition: border-color 0.2s;
+  transition: transform 0.25s, border-color 0.25s, box-shadow 0.25s;
 }
 
 .proof-card:hover {
+  transform: translateY(-2px);
   border-color: var(--border-strong);
+  box-shadow: var(--shadow-md);
 }
 
 .proof-num {
@@ -304,10 +335,25 @@ body::before {
   letter-spacing: 0.6px;
 }
 
-/* Section Common */
+@keyframes fadeSlideUp {
+  0% { opacity: 0; transform: translateY(18px); }
+  100% { opacity: 1; transform: translateY(0); }
+}
+
+/* -------------------------------------------------------------
+   SECTIONS COMMON
+   ------------------------------------------------------------- */
 .section {
-  padding: 70px 0;
+  padding: 76px 0;
   border-top: 1px solid var(--border-subtle);
+  opacity: 0;
+  transform: translateY(24px);
+  transition: opacity 0.6s cubic-bezier(0.16, 1, 0.3, 1), transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.section.visible {
+  opacity: 1;
+  transform: translateY(0);
 }
 
 .section-tag {
@@ -333,7 +379,9 @@ body::before {
   margin-bottom: 36px;
 }
 
-/* Section 2: Problem Comparison */
+/* -------------------------------------------------------------
+   2. THE PROBLEM (ANIMATED SIDE-BY-SIDE FLOWS)
+   ------------------------------------------------------------- */
 .problem-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -346,6 +394,7 @@ body::before {
   border-radius: 14px;
   padding: 28px;
   position: relative;
+  transition: border-color 0.3s;
 }
 
 .comparison-card.bad {
@@ -371,32 +420,66 @@ body::before {
 .card-badge.bad { color: var(--brand-rose); }
 .card-badge.good { color: var(--brand-emerald); }
 
+.animated-flow-container {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
 .flow-step {
   display: flex;
   align-items: center;
-  gap: 12px;
+  justify-content: space-between;
   padding: 12px 16px;
   background: var(--bg-surface-elevated);
   border: 1px solid var(--border-subtle);
   border-radius: 8px;
   font-size: 0.875rem;
-  margin-bottom: 8px;
+  transition: all 0.3s ease;
+}
+
+.flow-step.highlight-pulse-bad {
+  border-color: var(--brand-rose);
+  background: rgba(244, 63, 94, 0.1);
+  color: var(--brand-rose);
+  animation: pulseRed 1.5s infinite;
+}
+
+.flow-step.highlight-pulse-good {
+  border-color: var(--brand-emerald);
+  background: rgba(16, 185, 129, 0.1);
+  color: var(--brand-emerald);
+  animation: pulseGreen 1.5s infinite;
+}
+
+@keyframes pulseRed {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(244, 63, 94, 0.4); }
+  50% { box-shadow: 0 0 0 6px rgba(244, 63, 94, 0); }
+}
+
+@keyframes pulseGreen {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.4); }
+  50% { box-shadow: 0 0 0 6px rgba(16, 185, 129, 0); }
 }
 
 .flow-arrow {
   text-align: center;
   color: var(--text-muted);
   font-size: 0.8rem;
-  margin: 4px 0;
+  margin: 2px 0;
 }
 
-/* Section 3: Interactive Hero Demo Showcase */
+/* -------------------------------------------------------------
+   3. HERO DEMO (INTERACTIVE TIMELINE & BARRIER SHIELD)
+   ------------------------------------------------------------- */
 .demo-stage {
   background: var(--bg-surface);
   border: 1px solid var(--border-strong);
   border-radius: 16px;
   box-shadow: var(--shadow-lg);
   padding: 32px;
+  position: relative;
+  overflow: hidden;
 }
 
 .demo-header {
@@ -465,6 +548,7 @@ body::before {
   border-radius: 10px;
   padding: 16px;
   margin-bottom: 16px;
+  transition: border-color 0.3s, background 0.3s;
 }
 
 .intent-version-tag {
@@ -477,6 +561,7 @@ body::before {
   border-radius: 4px;
   display: inline-block;
   margin-bottom: 8px;
+  transition: all 0.3s;
 }
 
 .intent-slots {
@@ -496,6 +581,7 @@ body::before {
   margin-bottom: 10px;
   font-size: 0.875rem;
   font-weight: 500;
+  transition: all 0.3s ease;
 }
 
 .status-badge {
@@ -511,24 +597,40 @@ body::before {
 .badge-stale { background: rgba(244, 63, 94, 0.15); color: var(--brand-rose); }
 .badge-committed { background: rgba(16, 185, 129, 0.15); color: var(--brand-emerald); }
 
+/* Shield Barrier Visual Alert */
 .stale-alert-box {
-  background: rgba(244, 63, 94, 0.08);
-  border: 1px solid rgba(244, 63, 94, 0.3);
+  background: rgba(16, 185, 129, 0.05);
+  border: 1px solid rgba(16, 185, 129, 0.3);
   border-radius: 10px;
-  padding: 16px;
+  padding: 18px;
   margin-top: 14px;
   display: flex;
-  flex-direction: column;
-  gap: 6px;
+  align-items: flex-start;
+  gap: 12px;
+  animation: barrierShieldReveal 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes barrierShieldReveal {
+  0% { opacity: 0; transform: scale(0.95); }
+  50% { border-color: var(--brand-rose); background: rgba(244, 63, 94, 0.1); }
+  100% { opacity: 1; transform: scale(1); border-color: rgba(16, 185, 129, 0.3); background: rgba(16, 185, 129, 0.05); }
+}
+
+.barrier-shield-icon {
+  width: 28px;
+  height: 28px;
+  flex-shrink: 0;
+  color: var(--brand-emerald);
 }
 
 .stale-alert-title {
-  color: var(--brand-rose);
+  color: var(--brand-emerald);
   font-weight: 700;
-  font-size: 0.85rem;
+  font-size: 0.9rem;
   display: flex;
   align-items: center;
   gap: 6px;
+  margin-bottom: 4px;
 }
 
 .stale-alert-desc {
@@ -536,7 +638,36 @@ body::before {
   color: var(--text-secondary);
 }
 
-/* Section 4: Four Principles */
+/* Sequential 4-Stage Commit Pipeline Visual */
+.commit-stages-row {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 8px;
+  margin-top: 16px;
+}
+
+.commit-stage-pill {
+  padding: 8px 6px;
+  text-align: center;
+  border-radius: 6px;
+  background: var(--bg-surface);
+  border: 1px solid var(--border-subtle);
+  font-size: 0.725rem;
+  font-family: var(--font-mono);
+  font-weight: 600;
+  color: var(--text-muted);
+  transition: all 0.3s ease;
+}
+
+.commit-stage-pill.illuminated {
+  background: rgba(16, 185, 129, 0.15);
+  border-color: var(--brand-emerald);
+  color: var(--brand-emerald);
+}
+
+/* -------------------------------------------------------------
+   4. FOUR PRINCIPLES WITH MINIMAL VECTOR ICONS
+   ------------------------------------------------------------- */
 .principles-grid {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
@@ -548,12 +679,27 @@ body::before {
   border: 1px solid var(--border-subtle);
   border-radius: 12px;
   padding: 24px;
-  transition: transform 0.2s, border-color 0.2s;
+  transition: transform 0.25s, border-color 0.25s;
+  display: flex;
+  flex-direction: column;
 }
 
 .principle-card:hover {
-  transform: translateY(-2px);
+  transform: translateY(-3px);
   border-color: var(--border-strong);
+}
+
+.principle-icon-wrapper {
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  background: var(--bg-surface-elevated);
+  border: 1px solid var(--border-subtle);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 16px;
+  color: var(--brand-cyan);
 }
 
 .principle-number {
@@ -561,11 +707,11 @@ body::before {
   font-weight: 800;
   color: var(--brand-cyan);
   font-family: var(--font-mono);
-  margin-bottom: 12px;
+  margin-bottom: 8px;
 }
 
 .principle-title {
-  font-size: 1rem;
+  font-size: 1.05rem;
   font-weight: 700;
   margin-bottom: 8px;
   color: var(--text-primary);
@@ -577,20 +723,23 @@ body::before {
   line-height: 1.5;
 }
 
-/* Section 5: DAG Graph */
+/* -------------------------------------------------------------
+   5. EXECUTION GRAPH (DAG WITH MOVING CONNECTION LINES)
+   ------------------------------------------------------------- */
 .dag-container {
   background: var(--bg-surface);
   border: 1px solid var(--border-subtle);
   border-radius: 14px;
-  padding: 32px;
+  padding: 36px;
   text-align: center;
+  position: relative;
 }
 
-.dag-flow {
+.dag-flow-wrapper {
   display: flex;
   justify-content: center;
   align-items: center;
-  gap: 16px;
+  gap: 14px;
   margin: 32px 0;
   flex-wrap: wrap;
 }
@@ -599,25 +748,44 @@ body::before {
   background: var(--bg-surface-elevated);
   border: 1px solid var(--border-strong);
   border-radius: 10px;
-  padding: 14px 22px;
+  padding: 14px 20px;
   font-weight: 600;
   font-size: 0.9rem;
   display: flex;
   flex-direction: column;
   gap: 4px;
-  min-width: 140px;
+  min-width: 145px;
+  transition: all 0.3s ease;
 }
 
 .dag-node.valid { border-color: var(--brand-emerald); color: var(--brand-emerald); }
 .dag-node.invalidated { border-color: var(--brand-rose); color: var(--brand-rose); background: rgba(244, 63, 94, 0.05); }
 .dag-node.blocked { border-color: var(--text-muted); color: var(--text-muted); }
 
-.dag-arrow {
+.dag-arrow-svg {
+  width: 24px;
+  height: 24px;
   color: var(--text-muted);
-  font-size: 1.2rem;
+  flex-shrink: 0;
 }
 
-/* Section 6: Invariants */
+.independent-branch-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(16, 185, 129, 0.08);
+  border: 1px solid var(--brand-emerald);
+  border-radius: 20px;
+  padding: 6px 14px;
+  font-size: 0.8rem;
+  color: var(--brand-emerald);
+  font-weight: 600;
+  margin-top: 16px;
+}
+
+/* -------------------------------------------------------------
+   6. INVARIANTS (MINIMAL OUTLINE ICONS)
+   ------------------------------------------------------------- */
 .invariants-list {
   display: grid;
   grid-template-columns: 1fr;
@@ -632,11 +800,25 @@ body::before {
   border: 1px solid var(--border-subtle);
   border-radius: 10px;
   padding: 14px 20px;
-  transition: border-color 0.2s;
+  transition: transform 0.2s, border-color 0.2s;
 }
 
 .invariant-row:hover {
+  transform: translateX(3px);
   border-color: var(--border-strong);
+}
+
+.inv-icon-cell {
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  background: var(--bg-surface-elevated);
+  border: 1px solid var(--border-subtle);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--brand-cyan);
+  flex-shrink: 0;
 }
 
 .inv-id {
@@ -647,7 +829,7 @@ body::before {
   background: rgba(6, 182, 212, 0.1);
   padding: 4px 8px;
   border-radius: 6px;
-  min-width: 60px;
+  min-width: 58px;
   text-align: center;
 }
 
@@ -658,7 +840,9 @@ body::before {
   flex: 1;
 }
 
-/* Section 7: Adversarial Matrix */
+/* -------------------------------------------------------------
+   7. ADVERSARIAL MATRIX & ANIMATED COUNTER
+   ------------------------------------------------------------- */
 .matrix-container {
   background: var(--bg-surface);
   border: 1px solid var(--border-subtle);
@@ -695,12 +879,13 @@ body::before {
   margin-bottom: 16px;
   display: flex;
   justify-content: space-between;
+  align-items: center;
 }
 
 .stat-row {
   display: flex;
   justify-content: space-between;
-  padding: 8px 0;
+  padding: 9px 0;
   border-bottom: 1px solid var(--border-subtle);
   font-size: 0.875rem;
 }
@@ -709,46 +894,64 @@ body::before {
   border-bottom: none;
 }
 
-/* Section 8: Overhead Table */
-.perf-table {
-  width: 100%;
-  border-collapse: collapse;
+/* -------------------------------------------------------------
+   8. PERFORMANCE LATENCY BARS
+   ------------------------------------------------------------- */
+.perf-bar-container {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
   background: var(--bg-surface);
   border: 1px solid var(--border-subtle);
   border-radius: 12px;
-  overflow: hidden;
+  padding: 24px;
 }
 
-.perf-table th {
+.perf-bar-row {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.perf-bar-header {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+.perf-track {
+  height: 8px;
+  border-radius: 4px;
   background: var(--bg-surface-elevated);
-  padding: 14px 20px;
-  text-align: left;
-  font-size: 0.8rem;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-  color: var(--text-muted);
+  overflow: hidden;
+  position: relative;
 }
 
-.perf-table td {
-  padding: 14px 20px;
-  border-top: 1px solid var(--border-subtle);
-  font-size: 0.875rem;
+.perf-fill {
+  height: 100%;
+  border-radius: 4px;
+  width: 0%;
+  transition: width 1s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-.perf-table tr:hover td {
-  background: rgba(255, 255, 255, 0.01);
-}
+.perf-fill.cyan { background: var(--brand-cyan); }
+.perf-fill.amber { background: var(--brand-amber); }
+.perf-fill.indigo { background: var(--brand-indigo); }
+.perf-fill.emerald { background: var(--brand-emerald); }
 
-/* Section 9: Architecture Minimal */
+/* -------------------------------------------------------------
+   9. ARCHITECTURE PIPELINE (ANIMATED ACTIVE NODE PULSE)
+   ------------------------------------------------------------- */
 .arch-diagram {
   background: var(--bg-surface);
   border: 1px solid var(--border-subtle);
   border-radius: 14px;
-  padding: 32px;
+  padding: 36px;
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 10px;
+  gap: 8px;
 }
 
 .arch-node {
@@ -758,11 +961,21 @@ body::before {
   border-radius: 8px;
   font-weight: 600;
   font-size: 0.85rem;
-  min-width: 280px;
+  min-width: 320px;
   text-align: center;
+  transition: all 0.3s ease;
 }
 
-/* Section 10: Advanced Inspector Collapsible */
+.arch-node.active-stage {
+  border-color: var(--brand-cyan);
+  background: rgba(6, 182, 212, 0.12);
+  color: #fff;
+  box-shadow: 0 0 16px rgba(6, 182, 212, 0.25);
+}
+
+/* -------------------------------------------------------------
+   10. ADVANCED INSPECTOR COLLAPSIBLE
+   ------------------------------------------------------------- */
 .accordion {
   background: var(--bg-surface);
   border: 1px solid var(--border-subtle);
@@ -786,7 +999,6 @@ body::before {
   display: none;
 }
 
-/* Replay Terminal in Inspector */
 .telemetry-feed {
   background: #000;
   border: 1px solid var(--border-strong);
@@ -803,6 +1015,20 @@ body::before {
   margin-bottom: 6px;
   padding: 4px 6px;
   border-radius: 4px;
+}
+
+/* -------------------------------------------------------------
+   REDUCED MOTION RESPECT
+   ------------------------------------------------------------- */
+@media (prefers-reduced-motion: reduce) {
+  *, ::before, ::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+  #hero-canvas { display: none; }
+  .section { opacity: 1 !important; transform: none !important; }
 }
 
 /* Responsive */
