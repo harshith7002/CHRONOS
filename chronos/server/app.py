@@ -108,6 +108,13 @@ async def run_multimodal():
     return {"status": "ok", "result": res, "state": agent.get_state_summary()}
 
 
+@app.post("/api/run_matrix")
+async def run_matrix():
+    from chronos.evaluation.adversarial_matrix import AdversarialBenchmarkRunner
+    summary = AdversarialBenchmarkRunner.run_matrix(seeds_per_scenario=25)
+    return {"status": "ok", "summary": summary.model_dump()}
+
+
 @app.post("/api/run_benchmark")
 async def run_benchmark():
     report = LatencyBenchmark.run_full_benchmark(iterations=500)

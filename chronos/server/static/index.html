@@ -12,7 +12,7 @@
   <header class="dashboard-header">
     <div class="logo-area">
       <div class="logo-title">CHRONOS</div>
-      <span style="font-size: 0.85rem; color: var(--text-muted);">TEMPORAL CONTROL PLANE PROTOTYPE</span>
+      <span style="font-size: 0.85rem; color: var(--text-muted);">TEMPORAL CONTROL PLANE FOR REAL-TIME AI</span>
     </div>
 
     <div class="status-pills">
@@ -67,19 +67,9 @@
           <button class="btn btn-accent" onclick="runMultimodalDemo()">4. Multimodal Vision Grounding & Revision</button>
         </div>
 
-        <div style="font-size: 0.8rem; font-weight: 700; color: var(--text-secondary); margin-top: 4px;">Manual Step-by-Step Actions:</div>
+        <div style="font-size: 0.8rem; font-weight: 700; color: var(--text-secondary); margin-top: 4px;">Empirical Benchmarks & Baseline Matrix:</div>
         <div class="btn-group">
-          <button class="btn" onclick="sendInput('Find me a flight to Delhi tomorrow morning under 10000')">Search Delhi (v1)</button>
-          <button class="btn" onclick="sendInput('Actually Mumbai')">Interrupt: Mumbai (v2)</button>
-          <button class="btn btn-danger" onclick="injectStaleDelhi()">Force Late Delhi Result</button>
-          <button class="btn" onclick="sendInput('Book the cheapest one')">Book Cheapest (Prepare)</button>
-          <button class="btn btn-primary" onclick="sendInput('Yes, confirm and proceed with booking')">Confirm Commit</button>
-        </div>
-
-        <div style="font-size: 0.8rem; color: var(--text-secondary); margin-top: 4px;">Virtual Clock & Benchmarks:</div>
-        <div class="btn-group">
-          <button class="btn" onclick="stepTime(0.1)">Step +0.1s</button>
-          <button class="btn" onclick="stepTime(0.5)">Step +0.5s</button>
+          <button class="btn btn-primary" onclick="runAdversarialMatrix()">🏆 Run 20-Scenario Adversarial Benchmark (500 Runs)</button>
           <button class="btn btn-accent" onclick="runBenchmark()">⚡ Measure Empirical Latencies (p50/p95/p99)</button>
           <button class="btn btn-danger" onclick="resetState()">Reset Agent</button>
         </div>
@@ -142,15 +132,30 @@
       </div>
     </div>
 
-    <!-- Real-Time Event Log Stream -->
+    <!-- Real-Time Event Log Stream & Replay Debugger -->
     <div class="panel col-6">
       <div class="panel-title">
-        <span>Immutable Event Sourced Telemetry</span>
-        <span style="font-size: 0.75rem; color: var(--accent-green);">Live Feed</span>
+        <span>Immutable Event Stream & Replay Debugger</span>
+        <div style="display: flex; gap: 4px;">
+          <button class="btn" style="padding: 2px 8px; font-size: 0.7rem;" onclick="stepReplay(-1)">◀ Prev</button>
+          <button class="btn" style="padding: 2px 8px; font-size: 0.7rem;" onclick="stepReplay(1)">▶ Next</button>
+          <span style="font-size: 0.75rem; color: var(--accent-green); margin-left: 6px;">Live</span>
+        </div>
       </div>
 
       <div class="event-stream" id="event-stream-container" style="height: 360px;">
         <!-- Event rows injected here -->
+      </div>
+    </div>
+
+    <!-- Adversarial Benchmark Scorecard Panel -->
+    <div class="panel col-12" id="matrix-panel" style="display: none;">
+      <div class="panel-title">
+        <span>20-Category Adversarial Matrix: Naive Agent Baseline vs. CHRONOS</span>
+        <span style="font-size: 0.75rem; color: var(--accent-green);">Deterministic Invariant Verification</span>
+      </div>
+      <div id="matrix-results-container" style="font-family: var(--font-mono); font-size: 0.8rem; color: var(--text-primary);">
+        Loading adversarial benchmark results...
       </div>
     </div>
 

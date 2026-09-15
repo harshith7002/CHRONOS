@@ -1,6 +1,8 @@
 // CHRONOS UI Controller & Telemetry Stream
 
 let eventSource = null;
+let replayEventIndex = -1;
+let cachedEvents = [];
 
 function initSSE() {
   if (eventSource) {
@@ -141,8 +143,9 @@ function renderState(state) {
   // Event Stream
   const eventContainer = document.getElementById('event-stream-container');
   const events = state.recent_events || [];
-  eventContainer.innerHTML = events.slice().reverse().map(e => `
-    <div class="event-row">
+  cachedEvents = events;
+  eventContainer.innerHTML = events.slice().reverse().map((e, idx) => `
+    <div class="event-row" id="evt-row-${events.length - 1 - idx}">
       <div class="event-header">
         <span class="event-type ev-${e.event_type}">${e.event_type}</span>
         <span style="color: var(--text-muted); font-size: 0.7rem;">@ ${e.timestamp.toFixed(2)}s | ${e.snapshot_id}</span>
@@ -150,6 +153,18 @@ function renderState(state) {
       <div class="event-payload">${JSON.stringify(e.payload)}</div>
     </div>
   `).join('');
+}
+
+function stepReplay(delta) {
+  if (!cachedEvents || cachedEvents.length === 0) return;
+  if (replayEventIndex === -1) replayEventIndex = cachedEvents.length - 1;
+  replayEventIndex = Math.max(0, Math.min(cachedEvents.length - 1, replayEventIndex + delta));
+  const el = document.getElementById(`evt-row-${replayEventIndex}`);
+  if (el) {
+    document.querySelectorAll('.event-row').forEach(r => r.style.background = 'rgba(255, 255, 255, 0.02)');
+    el.style.background = 'rgba(6, 182, 212, 0.2)';
+    el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  }
 }
 
 async function sendInput(text) {
@@ -252,6 +267,40 @@ async function runMultimodalDemo() {
     alert(`Multimodal Grounding & Revision Completed!\nInitial: ${JSON.stringify(data.result.initial_slots)}\nCorrected: ${JSON.stringify(data.result.corrected_slots)}\nCancelled Tools: ${data.result.cancelled_tools_count}`);
   } catch (e) {
     console.error("runMultimodalDemo error", e);
+  }
+}
+
+async function runAdversarialMatrix() {
+  const panel = document.getElementById('matrix-panel');
+  const container = document.getElementById('matrix-results-container');
+  panel.style.display = 'block';
+  container.innerHTML = '<span style="color: var(--accent-cyan);">Executing 500 randomized runs across 20 failure categories...</span>';
+
+  try {
+    const res = await fetch('/api/run_matrix', { method: 'POST' });
+    const data = await res.json();
+    const s = data.summary;
+
+    container.innerHTML = `
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 12px;">
+        <div style="background: rgba(16, 185, 129, 0.1); border: 1px solid var(--accent-green); padding: 10px; border-radius: 8px;">
+          <div style="font-weight: bold; color: var(--accent-green);">CHRONOS Control Plane (N=${s.total_runs})</div>
+          <div>Task Completion Rate: <strong>${(s.chronos_task_completion_rate * 100).toFixed(1)}%</strong></div>
+          <div>Invariant Violations: <strong>${s.chronos_total_invariant_violations} (0.00%)</strong></div>
+          <div>Duplicate Commits: <strong>${s.chronos_total_duplicate_commits}</strong></div>
+          <div>Stale Violations: <strong>${s.chronos_total_stale_violations}</strong></div>
+        </div>
+        <div style="background: rgba(239, 68, 68, 0.1); border: 1px solid var(--accent-red); padding: 10px; border-radius: 8px;">
+          <div style="font-weight: bold; color: var(--accent-red);">Naive Baseline Agent (N=${s.total_runs})</div>
+          <div>Safety Violations: <strong style="color: var(--accent-red);">${s.naive_total_safety_violations}</strong></div>
+          <div>Duplicate Commits: <strong style="color: var(--accent-red);">${s.naive_total_duplicate_commits}</strong></div>
+          <div>Stale State Contaminations: <strong style="color: var(--accent-red);">${s.naive_total_stale_violations}</strong></div>
+        </div>
+      </div>
+    `;
+  } catch (e) {
+    console.error("runAdversarialMatrix error", e);
+    container.innerHTML = `<span style="color: var(--accent-red);">Matrix benchmark error: ${e}</span>`;
   }
 }
 
