@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CHRONOS | Temporal Control Plane</title>
+  <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+
+  <!-- Top Header Bar -->
+  <header class="dashboard-header">
+    <div class="logo-area">
+      <div class="logo-title">CHRONOS</div>
+      <span style="font-size: 0.85rem; color: var(--text-muted);">TEMPORAL CONTROL PLANE FOR REAL-TIME AI</span>
+    </div>
+
+    <div class="status-pills">
+      <div class="pill pill-cyan">V-TIME: <span id="val-virtual-time">0.00s</span></div>
+      <div class="pill pill-purple">SNAPSHOT: <span id="val-current-snapshot">v0</span></div>
+      <div class="pill pill-amber">BRANCH: <span id="val-current-branch">main</span></div>
+      <div class="pill pill-green">COMMIT: <span id="val-commit-status">IDLE</span></div>
+    </div>
+  </header>
+
+  <!-- Metrics Grid -->
+  <div class="metric-grid" style="margin-bottom: 16px;">
+    <div class="metric-card">
+      <div class="metric-num" id="val-metric-snapshots">0</div>
+      <div class="metric-label">Snapshots Created</div>
+    </div>
+    <div class="metric-card">
+      <div class="metric-num" id="val-metric-stale">0</div>
+      <div class="metric-label">Stale Results Rejected</div>
+    </div>
+    <div class="metric-card">
+      <div class="metric-num" id="val-metric-duplicates" style="color: var(--accent-green);">0</div>
+      <div class="metric-label">Duplicate Commits (0 = Safe)</div>
+    </div>
+    <div class="metric-card">
+      <div class="metric-num" id="val-metric-events">0</div>
+      <div class="metric-label">Total Immutable Events</div>
+    </div>
+  </div>
+
+  <!-- Main Grid Panels -->
+  <div class="grid-container">
+
+    <!-- Interactive Control Console -->
+    <div class="panel col-6">
+      <div class="panel-title">
+        <span>Interactive Control & Interruption Injector</span>
+        <span style="font-size: 0.75rem; color: var(--accent-cyan);">Live Controller</span>
+      </div>
+
+      <div class="control-box">
+        <div class="input-row">
+          <input type="text" id="custom-input-text" placeholder="Type user utterance (e.g. 'Find flight to Delhi', 'Actually Mumbai', 'Book it')...">
+          <button class="btn btn-primary" onclick="sendCustomInput()">Send</button>
+        </div>
+
+        <div style="font-size: 0.8rem; color: var(--text-secondary); margin-top: 4px;">Quick Actions & Scenario Injections:</div>
+        <div class="btn-group">
+          <button class="btn btn-accent" onclick="sendInput('Find me a flight to Delhi tomorrow morning under 10000')">1. Search Delhi (v1)</button>
+          <button class="btn btn-accent" onclick="sendInput('Actually Mumbai')">2. Interrupt: Mumbai (v2)</button>
+          <button class="btn btn-danger" onclick="injectStaleDelhi()">3. Force Late Delhi (Stale Injection)</button>
+          <button class="btn btn-accent" onclick="sendInput('Book the cheapest one')">4. Book Cheapest (Prepare)</button>
+          <button class="btn btn-primary" onclick="sendInput('Yes, confirm and proceed with booking')">5. Confirm Commit</button>
+        </div>
+
+        <div style="font-size: 0.8rem; color: var(--text-secondary); margin-top: 4px;">Interruption Levels:</div>
+        <div class="btn-group">
+          <button class="btn" onclick="sendInput('yeah, ok')">L0: Backchannel ("yeah")</button>
+          <button class="btn" onclick="sendInput('Actually Friday')">L1: Slot Change ("Friday")</button>
+          <button class="btn" onclick="sendInput('Don\'t book it, just show options')">L2: Goal Change</button>
+          <button class="btn btn-danger" onclick="sendInput('Stop')">L3: Explicit Stop</button>
+        </div>
+
+        <div style="font-size: 0.8rem; color: var(--text-secondary); margin-top: 4px;">Simulation Virtual Clock:</div>
+        <div class="btn-group">
+          <button class="btn" onclick="stepTime(0.1)">Step +0.1s</button>
+          <button class="btn" onclick="stepTime(0.5)">Step +0.5s</button>
+          <button class="btn" onclick="runFullDemo()">▶ Run Full Canonical Demo</button>
+          <button class="btn btn-danger" onclick="resetState()">Reset Agent</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Active Intent & State Snapshot -->
+    <div class="panel col-6">
+      <div class="panel-title">
+        <span>Active Intent Slots & Version Tree</span>
+        <span id="label-snap-meta" style="font-size: 0.75rem; color: var(--accent-purple);">Parent: None</span>
+      </div>
+
+      <div style="margin-bottom: 10px;">
+        <div style="font-size: 0.8rem; color: var(--text-secondary); margin-bottom: 6px;">Current Version Intent Slots:</div>
+        <div id="slots-container" style="min-height: 48px; background: var(--bg-primary); border: 1px solid var(--border-color); border-radius: 8px; padding: 6px;">
+          <span style="color: var(--text-muted); font-size: 0.8rem;">No slots populated yet.</span>
+        </div>
+      </div>
+
+      <div>
+        <div style="font-size: 0.8rem; color: var(--text-secondary); margin-bottom: 6px;">Snapshot Lineage:</div>
+        <div id="snapshot-history" style="max-height: 110px; overflow-y: auto; font-family: var(--font-mono); font-size: 0.75rem; color: var(--text-secondary); background: var(--bg-primary); padding: 8px; border-radius: 8px;">
+          v0 (root)
+        </div>
+      </div>
+    </div>
+
+    <!-- Live Tool Execution Registry & Stale Status -->
+    <div class="panel col-6">
+      <div class="panel-title">
+        <span>Tool Execution Plane & Dependency DAG</span>
+        <span style="font-size: 0.75rem; color: var(--accent-cyan);">Active / Stale / Cancelled</span>
+      </div>
+
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; height: 380px;">
+        <div style="display: flex; flex-direction: column;">
+          <div style="font-size: 0.8rem; font-weight: 700; color: var(--accent-cyan); margin-bottom: 6px;">Active In-Flight Calls:</div>
+          <div id="active-calls-list" style="flex: 1; overflow-y: auto; background: var(--bg-primary); border: 1px solid var(--border-color); border-radius: 8px; padding: 8px;">
+            <span style="color: var(--text-muted); font-size: 0.75rem;">None</span>
+          </div>
+        </div>
+
+        <div style="display: flex; flex-direction: column;">
+          <div style="font-size: 0.8rem; font-weight: 700; color: var(--accent-red); margin-bottom: 6px;">Stale & Cancelled Calls:</div>
+          <div id="stale-calls-list" style="flex: 1; overflow-y: auto; background: var(--bg-primary); border: 1px solid var(--border-color); border-radius: 8px; padding: 8px;">
+            <span style="color: var(--text-muted); font-size: 0.75rem;">None</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Real-Time Event Log Stream -->
+    <div class="panel col-6">
+      <div class="panel-title">
+        <span>Event-Sourced Telemetry Stream</span>
+        <span style="font-size: 0.75rem; color: var(--accent-green);">Live Feed</span>
+      </div>
+
+      <div class="event-stream" id="event-stream-container">
+        <!-- Event rows injected here -->
+      </div>
+    </div>
+
+  </div>
+
+  <script src="/static/app.js"></script>
+</body>
+</html>
