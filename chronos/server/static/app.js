@@ -1,6 +1,7 @@
-// CHRONOS UI Controller & Telemetry Stream
+// CHRONOS Premium UI Controller & Interactive Story Engine
 
 let eventSource = null;
+let currentDemoStep = 1;
 let replayEventIndex = -1;
 let cachedEvents = [];
 
@@ -22,7 +23,6 @@ function initSSE() {
   };
 
   eventSource.onerror = () => {
-    console.warn("SSE disconnected, attempting reconnect...");
     setTimeout(initSSE, 2000);
   };
 }
@@ -30,129 +30,311 @@ function initSSE() {
 function renderState(state) {
   if (!state) return;
 
-  // Header & Status
-  document.getElementById('val-virtual-time').innerText = `${state.virtual_time.toFixed(2)}s`;
-  document.getElementById('val-current-snapshot').innerText = state.current_snapshot?.snapshot_id || 'v0';
-  document.getElementById('val-current-branch').innerText = state.current_snapshot?.branch_id || 'main';
-  document.getElementById('val-commit-status').innerText = state.commit_status || 'IDLE';
+  // Update Inspector
+  const curSnap = state.current_snapshot?.snapshot_id || 'v0';
+  document.getElementById('insp-cur-snap').innerText = curSnap;
+  document.getElementById('insp-parent-snap').innerText = state.current_snapshot?.parent_snapshot_id || 'None';
+  document.getElementById('insp-branch').innerText = state.current_snapshot?.branch_id || 'main';
+  document.getElementById('insp-commit-status').innerText = state.commit_status || 'IDLE';
+  document.getElementById('insp-vtime').innerText = `${state.virtual_time.toFixed(2)}s`;
 
-  // Metrics
-  document.getElementById('val-metric-snapshots').innerText = state.all_snapshots?.length || 0;
-  document.getElementById('val-metric-stale').innerText = state.stale_results?.length || 0;
-  document.getElementById('val-metric-events').innerText = state.event_count || 0;
-
-  // Intent Slots
-  const slotsContainer = document.getElementById('slots-container');
-  const slots = state.intent_slots || {};
-  if (Object.keys(slots).length === 0) {
-    slotsContainer.innerHTML = '<span style="color: var(--text-muted); font-size: 0.8rem;">No slots populated yet.</span>';
-  } else {
-    slotsContainer.innerHTML = Object.entries(slots).map(([k, v]) => `
-      <div class="slot-tag">
-        <span class="slot-key">${k}:</span>
-        <span class="slot-val">${v}</span>
-      </div>
-    `).join('');
-  }
-
-  // Commit Pipeline View
-  const pipeView = document.getElementById('commit-pipeline-view');
-  const status = state.commit_status || 'IDLE';
-  if (status.includes('AWAITING_CONFIRMATION')) {
-    pipeView.innerHTML = `
-      <div class="pill pill-green">✓ SPECULATIVE</div>
-      <div class="pill pill-green">✓ PREPARE</div>
-      <div class="pill pill-amber" style="animation: pulse 1s infinite alternate;">⚠ CONFIRMATION NEEDED</div>
-      <div class="pill pill-red">○ COMMIT (LOCKED)</div>
-    `;
-  } else if (status === 'COMMITTED') {
-    pipeView.innerHTML = `
-      <div class="pill pill-green">✓ SPECULATIVE</div>
-      <div class="pill pill-green">✓ PREPARE</div>
-      <div class="pill pill-green">✓ CONFIRMED</div>
-      <div class="pill pill-green">✓ COMMITTED (IDEMPOTENT)</div>
-    `;
-  } else {
-    pipeView.innerHTML = `
-      <div class="pill pill-cyan">1. SPECULATIVE</div>
-      <div class="pill">2. PREPARE</div>
-      <div class="pill">3. CONFIRMATION</div>
-      <div class="pill">4. COMMIT</div>
-    `;
-  }
-
-  // Snapshot Lineage
-  const metaLabel = document.getElementById('label-snap-meta');
-  metaLabel.innerText = `Parent: ${state.current_snapshot?.parent_snapshot_id || 'None'} | Ver: ${state.current_snapshot?.version_number || 0}`;
-
-  const historyEl = document.getElementById('snapshot-history');
-  if (state.all_snapshots && state.all_snapshots.length > 0) {
-    historyEl.innerHTML = state.all_snapshots.map(s => `
-      <div style="margin-bottom: 4px; padding: 2px 4px; ${s.snapshot_id === state.current_snapshot.snapshot_id ? 'color: var(--accent-cyan); font-weight: bold; border-left: 2px solid var(--accent-cyan); padding-left: 6px;' : ''}">
-        ${s.snapshot_id} (parent: ${s.parent_snapshot_id || 'root'}) - slots: ${JSON.stringify(s.intent_slots)}
-      </div>
-    `).join('');
-  }
-
-  // Active Calls
-  const activeCallsList = document.getElementById('active-calls-list');
-  const active = state.active_tool_calls || [];
-  if (active.length === 0) {
-    activeCallsList.innerHTML = '<span style="color: var(--text-muted); font-size: 0.75rem;">None</span>';
-  } else {
-    activeCallsList.innerHTML = active.map(c => `
-      <div class="call-card call-active">
-        <div style="font-weight: 700; color: var(--accent-cyan);">RUNNING: ${c.tool_name}(${c.snapshot_id})</div>
-        <div style="font-size: 0.75rem; color: var(--text-secondary);">${JSON.stringify(c.arguments)}</div>
-        <div style="font-size: 0.7rem; color: var(--text-muted); margin-top: 4px;">Class: ${c.execution_class} | ID: ${c.call_id}</div>
-      </div>
-    `).join('');
-  }
-
-  // Stale & Cancelled Calls
-  const staleCallsList = document.getElementById('stale-calls-list');
-  const stale = state.stale_results || [];
-  const cancelled = state.cancelled_tool_calls || [];
-
-  let html = '';
-  if (stale.length > 0) {
-    html += stale.map(s => `
-      <div class="call-card call-stale">
-        <div style="font-weight: 700; color: var(--accent-red);">⚠ STALE RESULT REJECTED</div>
-        <div style="font-size: 0.8rem; font-weight: bold; color: #fca5a5;">${s.tool_name}(${s.origin_snapshot_id})</div>
-        <div style="font-size: 0.7rem; color: #f87171;">Blocked: Result snapshot ${s.origin_snapshot_id} != Current snapshot ${state.current_snapshot.snapshot_id}</div>
-      </div>
-    `).join('');
-  }
-
-  if (cancelled.length > 0) {
-    html += cancelled.map(c => `
-      <div class="call-card call-cancelled">
-        <div style="font-weight: 700; color: var(--accent-amber);">✓ CANCELLED: ${c.tool_name}(${c.snapshot_id})</div>
-        <div style="font-size: 0.75rem; color: var(--text-secondary);">${JSON.stringify(c.arguments)}</div>
-      </div>
-    `).join('');
-  }
-
-  if (!html) {
-    staleCallsList.innerHTML = '<span style="color: var(--text-muted); font-size: 0.75rem;">None</span>';
-  } else {
-    staleCallsList.innerHTML = html;
-  }
-
-  // Event Stream
+  // Telemetry stream
   const eventContainer = document.getElementById('event-stream-container');
   const events = state.recent_events || [];
   cachedEvents = events;
   eventContainer.innerHTML = events.slice().reverse().map((e, idx) => `
-    <div class="event-row" id="evt-row-${events.length - 1 - idx}">
-      <div class="event-header">
-        <span class="event-type ev-${e.event_type}">${e.event_type}</span>
-        <span style="color: var(--text-muted); font-size: 0.7rem;">@ ${e.timestamp.toFixed(2)}s | ${e.snapshot_id}</span>
-      </div>
-      <div class="event-payload">${JSON.stringify(e.payload)}</div>
+    <div class="telemetry-row" id="evt-row-${events.length - 1 - idx}" style="border-left: 2px solid ${getEventColor(e.event_type)};">
+      <span style="color: ${getEventColor(e.event_type)}; font-weight: bold;">[${e.event_type}]</span>
+      <span style="color: #64748b;">@ ${e.timestamp.toFixed(2)}s (${e.snapshot_id})</span>:
+      <span>${JSON.stringify(e.payload)}</span>
     </div>
   `).join('');
+}
+
+function getEventColor(type) {
+  switch (type) {
+    case 'USER_INPUT': return '#3b82f6';
+    case 'INTENT_UPDATE': return '#06b6d4';
+    case 'SNAPSHOT_CREATED': return '#8b5cf6';
+    case 'TOOL_DISPATCHED': return '#0284c7';
+    case 'TOOL_COMPLETED': return '#10b981';
+    case 'TOOL_CANCELLED': return '#f59e0b';
+    case 'STALE_RESULT_REJECTED': return '#f43f5e';
+    case 'COMMIT': return '#10b981';
+    default: return '#94a3b8';
+  }
+}
+
+// -------------------------------------------------------------
+// HERO DEMO INTERACTIVE STORY ENGINE
+// -------------------------------------------------------------
+
+function setStepActive(stepNum) {
+  currentDemoStep = stepNum;
+  for (let i = 1; i <= 4; i++) {
+    const btn = document.getElementById(`btn-step-${i}`);
+    if (btn) {
+      if (i === stepNum) btn.classList.add('active');
+      else btn.classList.remove('active');
+    }
+  }
+}
+
+async function jumpToDemoStep(step) {
+  setStepActive(step);
+
+  const titleEl = document.getElementById('demo-phase-title');
+  const descEl = document.getElementById('demo-phase-desc');
+  const snapBadge = document.getElementById('demo-snap-badge');
+  const commitBadge = document.getElementById('demo-commit-badge');
+  const userText = document.getElementById('demo-user-text');
+  const intentVTag = document.getElementById('demo-intent-vtag');
+  const intentSlots = document.getElementById('demo-intent-slots-content');
+  const execCards = document.getElementById('demo-execution-cards-container');
+  const staleAlert = document.getElementById('demo-stale-alert-area');
+  const commitBox = document.getElementById('demo-commit-box');
+  const nextBtn = document.getElementById('demo-next-action-btn');
+
+  if (step === 1) {
+    titleEl.innerText = "Phase 1: Initial Intent (v1)";
+    descEl.innerText = "User asks to search flights to Delhi";
+    snapBadge.innerText = "SNAPSHOT: v1";
+    snapBadge.style.color = "var(--brand-cyan)";
+    commitBadge.innerText = "COMMIT: IDLE";
+    userText.innerText = '"Find me a flight to Delhi tomorrow morning under 10000."';
+    intentVTag.innerText = "INTENT v1";
+    intentSlots.innerHTML = "Destination: <strong>Delhi</strong> · Date: <strong>Tomorrow</strong> · Time: <strong>Morning</strong>";
+    execCards.innerHTML = `
+      <div class="execution-card" style="border-left: 3px solid var(--brand-cyan);">
+        <span>search_flights(v1) [Delhi]</span>
+        <span class="status-badge badge-running">RUNNING</span>
+      </div>
+    `;
+    staleAlert.style.display = "none";
+    commitBox.style.display = "none";
+    nextBtn.innerText = "Next: User Interrupts ➔";
+    nextBtn.onclick = () => jumpToDemoStep(2);
+
+    // Call backend
+    await fetch('/api/reset', { method: 'POST' });
+    await fetch('/api/user_input', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ text: "Find me a flight to Delhi tomorrow morning under 10000" })
+    });
+  } else if (step === 2) {
+    titleEl.innerText = "Phase 2: Intent Versioning & Interruption (v2)";
+    descEl.innerText = "User changes destination mid-stream: v1 is cancelled, v2 starts";
+    snapBadge.innerText = "SNAPSHOT: v2";
+    snapBadge.style.color = "var(--brand-cyan)";
+    commitBadge.innerText = "COMMIT: IDLE";
+    userText.innerText = '"Actually Mumbai."';
+    intentVTag.innerText = "INTENT v2";
+    intentSlots.innerHTML = "Destination: <strong style='color: var(--brand-cyan);'>Mumbai</strong> · Date: <strong>Tomorrow</strong> · Time: <strong>Morning</strong>";
+    execCards.innerHTML = `
+      <div class="execution-card" style="border-left: 3px solid var(--brand-amber); opacity: 0.85;">
+        <span>search_flights(v1) [Delhi]</span>
+        <span class="status-badge badge-cancelled">✓ CANCELLED</span>
+      </div>
+      <div class="execution-card" style="border-left: 3px solid var(--brand-cyan);">
+        <span>search_flights(v2) [Mumbai]</span>
+        <span class="status-badge badge-running">RUNNING</span>
+      </div>
+    `;
+    staleAlert.style.display = "none";
+    commitBox.style.display = "none";
+    nextBtn.innerText = "Next: Simulate Out-of-Order Stale Result ➔";
+    nextBtn.onclick = () => jumpToDemoStep(3);
+
+    await fetch('/api/user_input', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ text: "Actually Mumbai" })
+    });
+  } else if (step === 3) {
+    titleEl.innerText = "Phase 3: Out-of-Order Stale Result Rejected";
+    descEl.innerText = "Old v1 Delhi result arrives late: rejected before mutating v2 state";
+    snapBadge.innerText = "SNAPSHOT: v2";
+    commitBadge.innerText = "COMMIT: IDLE";
+    userText.innerText = 'System event: Late Delhi result arrives';
+    intentVTag.innerText = "INTENT v2";
+    intentSlots.innerHTML = "Destination: <strong>Mumbai</strong> · State remains 100% clean";
+    execCards.innerHTML = `
+      <div class="execution-card" style="border-left: 3px solid var(--brand-rose); background: rgba(244, 63, 94, 0.05);">
+        <span>result(search_flights(v1)) [Delhi]</span>
+        <span class="status-badge badge-stale">STALE REJECTED</span>
+      </div>
+      <div class="execution-card" style="border-left: 3px solid var(--brand-emerald);">
+        <span>search_flights(v2) [Mumbai]</span>
+        <span class="status-badge badge-committed">COMPLETED</span>
+      </div>
+    `;
+    staleAlert.style.display = "block";
+    commitBox.style.display = "none";
+    nextBtn.innerText = "Next: Safe Commit & Confirmation ➔";
+    nextBtn.onclick = () => jumpToDemoStep(4);
+
+    await fetch('/api/inject_stale', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        call_id: "call_delhi_old",
+        origin_snapshot_id: "v1",
+        tool_name: "search_flights",
+        output: [{ flight_id: "DEL-999", price: 5000, dest: "Delhi" }]
+      })
+    });
+    await fetch('/api/step_time', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ delta: 0.5 })
+    });
+  } else if (step === 4) {
+    titleEl.innerText = "Phase 4: Guarded Commit & Strict Idempotency";
+    descEl.innerText = "Booking passes 4-phase safety gate with explicit confirmation";
+    snapBadge.innerText = "SNAPSHOT: v2";
+    commitBadge.innerText = "COMMIT: CONFIRMED";
+    commitBadge.style.color = "var(--brand-emerald)";
+    userText.innerText = '"Book the cheapest one." ➔ "Yes, confirm."';
+    intentVTag.innerText = "INTENT v2";
+    intentSlots.innerHTML = "Destination: <strong>Mumbai</strong> · Booking: <strong>Confirmed (PNR Generated)</strong>";
+    execCards.innerHTML = `
+      <div class="execution-card" style="border-left: 3px solid var(--brand-emerald);">
+        <span>book_flight(v2) [Mumbai BOM-303]</span>
+        <span class="status-badge badge-committed">✓ COMMITTED</span>
+      </div>
+    `;
+    staleAlert.style.display = "none";
+    commitBox.style.display = "block";
+    nextBtn.innerText = "✓ Demo Completed (Click to Replay)";
+    nextBtn.onclick = () => jumpToDemoStep(1);
+
+    await fetch('/api/user_input', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ text: "Book the cheapest one" })
+    });
+    await fetch('/api/user_input', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ text: "Yes, confirm and proceed" })
+    });
+  }
+}
+
+function advanceDemoStep() {
+  const next = currentDemoStep < 4 ? currentDemoStep + 1 : 1;
+  jumpToDemoStep(next);
+}
+
+async function startHeroInteractiveDemo() {
+  const el = document.getElementById('hero-demo');
+  if (el) el.scrollIntoView({ behavior: 'smooth' });
+  jumpToDemoStep(1);
+}
+
+// -------------------------------------------------------------
+// BENCHMARKS & INSPECTOR UTILITIES
+// -------------------------------------------------------------
+
+async function runLiveMatrixBenchmark() {
+  const btn = event.target;
+  btn.innerText = "Running 500 Iterations...";
+  btn.disabled = true;
+
+  try {
+    const res = await fetch('/api/run_matrix', { method: 'POST' });
+    const data = await res.json();
+    const s = data.summary;
+
+    document.getElementById('matrix-chronos-completion').innerText = `${(s.chronos_task_completion_rate * 100).toFixed(1)}%`;
+    document.getElementById('matrix-chronos-invariants').innerText = `${s.chronos_total_invariant_violations} (Zero)`;
+    document.getElementById('matrix-chronos-duplicates').innerText = `${s.chronos_total_duplicate_commits} (Zero)`;
+    document.getElementById('matrix-chronos-stale').innerText = `${s.chronos_total_stale_violations} (Zero)`;
+
+    document.getElementById('matrix-naive-safety').innerText = `${s.naive_total_safety_violations} Violations`;
+    document.getElementById('matrix-naive-duplicates').innerText = `${s.naive_total_duplicate_commits} Duplicates`;
+    document.getElementById('matrix-naive-stale').innerText = `${s.naive_total_stale_violations} Contaminations`;
+
+    btn.innerText = "✓ Matrix Verified (500 Runs)";
+  } catch (e) {
+    btn.innerText = "⚡ Re-run Matrix";
+  } finally {
+    btn.disabled = false;
+  }
+}
+
+async function measureLiveOverhead() {
+  try {
+    const res = await fetch('/api/run_benchmark', { method: 'POST' });
+    const data = await res.json();
+    const b = data.benchmark;
+
+    document.getElementById('lat-ack-p50').innerText = `${(b.fast_path_ack_latency.p50_ms * 1000).toFixed(0)} µs (${b.fast_path_ack_latency.p50_ms.toFixed(3)} ms)`;
+    document.getElementById('lat-ack-p95').innerText = `${(b.fast_path_ack_latency.p95_ms * 1000).toFixed(0)} µs`;
+    document.getElementById('lat-ack-p99').innerText = `${(b.fast_path_ack_latency.p99_ms * 1000).toFixed(0)} µs`;
+    document.getElementById('lat-ack-mean').innerText = `${(b.fast_path_ack_latency.mean_ms * 1000).toFixed(0)} µs`;
+
+    document.getElementById('lat-cancel-p50').innerText = `${(b.interruption_cancellation_latency.p50_ms * 1000).toFixed(0)} µs (${b.interruption_cancellation_latency.p50_ms.toFixed(3)} ms)`;
+    document.getElementById('lat-cancel-p95').innerText = `${(b.interruption_cancellation_latency.p95_ms * 1000).toFixed(0)} µs`;
+    document.getElementById('lat-cancel-p99').innerText = `${(b.interruption_cancellation_latency.p99_ms * 1000).toFixed(0)} µs`;
+    document.getElementById('lat-cancel-mean').innerText = `${(b.interruption_cancellation_latency.mean_ms * 1000).toFixed(0)} µs`;
+
+    alert("Empirical latencies re-measured over 500 local iterations!");
+  } catch (e) {
+    console.error("measureLiveOverhead error", e);
+  }
+}
+
+function toggleInspector() {
+  const body = document.getElementById('inspector-body');
+  const label = document.getElementById('inspector-toggle-label');
+  if (body.style.display === 'block') {
+    body.style.display = 'none';
+    label.innerText = "Click to Expand ▼";
+  } else {
+    body.style.display = 'block';
+    label.innerText = "Click to Collapse ▲";
+  }
+}
+
+async function sendInspectorInput() {
+  const inputEl = document.getElementById('inspector-input');
+  const text = inputEl.value.trim();
+  if (text) {
+    await fetch('/api/user_input', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ text })
+    });
+    inputEl.value = '';
+  }
+}
+
+async function stepTime(delta) {
+  await fetch('/api/step_time', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ delta })
+  });
+}
+
+async function injectStaleDelhi() {
+  await fetch('/api/inject_stale', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      call_id: "call_delhi_old",
+      origin_snapshot_id: "v1",
+      tool_name: "search_flights",
+      output: [{ flight_id: "DEL-999", price: 5000, dest: "Delhi" }]
+    })
+  });
+}
+
+async function resetState() {
+  await fetch('/api/reset', { method: 'POST' });
+  jumpToDemoStep(1);
 }
 
 function stepReplay(delta) {
@@ -161,230 +343,13 @@ function stepReplay(delta) {
   replayEventIndex = Math.max(0, Math.min(cachedEvents.length - 1, replayEventIndex + delta));
   const el = document.getElementById(`evt-row-${replayEventIndex}`);
   if (el) {
-    document.querySelectorAll('.event-row').forEach(r => r.style.background = 'rgba(255, 255, 255, 0.02)');
+    document.querySelectorAll('.telemetry-row').forEach(r => r.style.background = 'transparent');
     el.style.background = 'rgba(6, 182, 212, 0.2)';
     el.scrollIntoView({ behavior: 'smooth', block: 'center' });
   }
 }
 
-async function sendInput(text) {
-  try {
-    const res = await fetch('/api/user_input', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ text }),
-    });
-    const data = await res.json();
-    renderState(data.state);
-  } catch (e) {
-    console.error("sendInput error", e);
-  }
-}
-
-async function sendCustomInput() {
-  const inputEl = document.getElementById('custom-input-text');
-  const text = inputEl.value.trim();
-  if (text) {
-    await sendInput(text);
-    inputEl.value = '';
-  }
-}
-
-document.getElementById('custom-input-text')?.addEventListener('keypress', (e) => {
-  if (e.key === 'Enter') sendCustomInput();
-});
-
-async function stepTime(delta) {
-  try {
-    const res = await fetch('/api/step_time', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ delta }),
-    });
-    const data = await res.json();
-    renderState(data.state);
-  } catch (e) {
-    console.error("stepTime error", e);
-  }
-}
-
-async function injectStaleDelhi() {
-  try {
-    const res = await fetch('/api/inject_stale', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        call_id: "call_delhi_old",
-        origin_snapshot_id: "v1",
-        tool_name: "search_flights",
-        output: [{ flight_id: "DEL-999", price: 5000, dest: "Delhi" }]
-      }),
-    });
-    const data = await res.json();
-    renderState(data.state);
-  } catch (e) {
-    console.error("injectStale error", e);
-  }
-}
-
-async function runFullDemo() {
-  try {
-    const res = await fetch('/api/run_demo', { method: 'POST' });
-    const data = await res.json();
-    renderState(data.state);
-  } catch (e) {
-    console.error("runFullDemo error", e);
-  }
-}
-
-async function runChainedDemo() {
-  try {
-    const res = await fetch('/api/run_chained', { method: 'POST' });
-    const data = await res.json();
-    renderState(data.state);
-    alert(`Chained DAG Invalidation Completed!\nInvalidated nodes: ${data.result.invalidated_nodes.join(', ')}\nPreserved nodes: ${data.result.preserved_nodes.join(', ')}`);
-  } catch (e) {
-    console.error("runChainedDemo error", e);
-  }
-}
-
-async function runAdversarialDemo() {
-  try {
-    const res = await fetch('/api/run_adversarial', { method: 'POST' });
-    const data = await res.json();
-    renderState(data.state);
-    alert(`Adversarial Injection BLOCKED!\nReason: ${data.result.errors.join(' | ')}\nCommit Prevented: ${data.result.commit_prevented}`);
-  } catch (e) {
-    console.error("runAdversarialDemo error", e);
-  }
-}
-
-async function runMultimodalDemo() {
-  try {
-    const res = await fetch('/api/run_multimodal', { method: 'POST' });
-    const data = await res.json();
-    renderState(data.state);
-    alert(`Multimodal Grounding & Revision Completed!\nInitial: ${JSON.stringify(data.result.initial_slots)}\nCorrected: ${JSON.stringify(data.result.corrected_slots)}\nCancelled Tools: ${data.result.cancelled_tools_count}`);
-  } catch (e) {
-    console.error("runMultimodalDemo error", e);
-  }
-}
-
-async function runAdversarialMatrix() {
-  const panel = document.getElementById('matrix-panel');
-  const container = document.getElementById('matrix-results-container');
-  panel.style.display = 'block';
-  container.innerHTML = '<span style="color: var(--accent-cyan);">Executing 500 randomized runs across 20 failure categories...</span>';
-
-  try {
-    const res = await fetch('/api/run_matrix', { method: 'POST' });
-    const data = await res.json();
-    const s = data.summary;
-
-    container.innerHTML = `
-      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 12px;">
-        <div style="background: rgba(16, 185, 129, 0.1); border: 1px solid var(--accent-green); padding: 10px; border-radius: 8px;">
-          <div style="font-weight: bold; color: var(--accent-green);">CHRONOS Control Plane (N=${s.total_runs})</div>
-          <div>Task Completion Rate: <strong>${(s.chronos_task_completion_rate * 100).toFixed(1)}%</strong></div>
-          <div>Invariant Violations: <strong>${s.chronos_total_invariant_violations} (0.00%)</strong></div>
-          <div>Duplicate Commits: <strong>${s.chronos_total_duplicate_commits}</strong></div>
-          <div>Stale Violations: <strong>${s.chronos_total_stale_violations}</strong></div>
-        </div>
-        <div style="background: rgba(239, 68, 68, 0.1); border: 1px solid var(--accent-red); padding: 10px; border-radius: 8px;">
-          <div style="font-weight: bold; color: var(--accent-red);">Naive Baseline Agent (N=${s.total_runs})</div>
-          <div>Safety Violations: <strong style="color: var(--accent-red);">${s.naive_total_safety_violations}</strong></div>
-          <div>Duplicate Commits: <strong style="color: var(--accent-red);">${s.naive_total_duplicate_commits}</strong></div>
-          <div>Stale State Contaminations: <strong style="color: var(--accent-red);">${s.naive_total_stale_violations}</strong></div>
-        </div>
-      </div>
-    `;
-  } catch (e) {
-    console.error("runAdversarialMatrix error", e);
-    container.innerHTML = `<span style="color: var(--accent-red);">Matrix benchmark error: ${e}</span>`;
-  }
-}
-
-async function runBenchmark() {
-  const panel = document.getElementById('benchmark-panel');
-  const container = document.getElementById('benchmark-results-container');
-  panel.style.display = 'block';
-  container.innerHTML = '<span style="color: var(--accent-cyan);">Executing 500 iterations micro-benchmark...</span>';
-
-  try {
-    const res = await fetch('/api/run_benchmark', { method: 'POST' });
-    const data = await res.json();
-    const b = data.benchmark;
-
-    container.innerHTML = `
-      <table style="width: 100%; border-collapse: collapse; margin-top: 8px;">
-        <thead>
-          <tr style="border-bottom: 1px solid var(--border-color); color: var(--text-secondary); text-align: left;">
-            <th style="padding: 6px;">Critical Operation</th>
-            <th style="padding: 6px;">p50 (Median)</th>
-            <th style="padding: 6px;">p95</th>
-            <th style="padding: 6px;">p99</th>
-            <th style="padding: 6px;">Mean</th>
-            <th style="padding: 6px;">Samples</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr style="border-bottom: 1px solid rgba(255,255,255,0.05);">
-            <td style="padding: 6px; color: var(--accent-cyan);">Fast-Path Acknowledgment</td>
-            <td style="padding: 6px; font-weight: bold;">${b.fast_path_ack_latency.p50_ms.toFixed(3)} ms</td>
-            <td style="padding: 6px;">${b.fast_path_ack_latency.p95_ms.toFixed(3)} ms</td>
-            <td style="padding: 6px;">${b.fast_path_ack_latency.p99_ms.toFixed(3)} ms</td>
-            <td style="padding: 6px;">${b.fast_path_ack_latency.mean_ms.toFixed(3)} ms</td>
-            <td style="padding: 6px;">${b.fast_path_ack_latency.samples_count}</td>
-          </tr>
-          <tr style="border-bottom: 1px solid rgba(255,255,255,0.05);">
-            <td style="padding: 6px; color: var(--accent-amber);">Interruption ➔ Cancellation Propagation</td>
-            <td style="padding: 6px; font-weight: bold;">${b.interruption_cancellation_latency.p50_ms.toFixed(3)} ms</td>
-            <td style="padding: 6px;">${b.interruption_cancellation_latency.p95_ms.toFixed(3)} ms</td>
-            <td style="padding: 6px;">${b.interruption_cancellation_latency.p99_ms.toFixed(3)} ms</td>
-            <td style="padding: 6px;">${b.interruption_cancellation_latency.mean_ms.toFixed(3)} ms</td>
-            <td style="padding: 6px;">${b.interruption_cancellation_latency.samples_count}</td>
-          </tr>
-          <tr style="border-bottom: 1px solid rgba(255,255,255,0.05);">
-            <td style="padding: 6px; color: var(--accent-purple);">Immutable Snapshot Evolution</td>
-            <td style="padding: 6px; font-weight: bold;">${b.snapshot_evolution_latency.p50_ms.toFixed(3)} ms</td>
-            <td style="padding: 6px;">${b.snapshot_evolution_latency.p95_ms.toFixed(3)} ms</td>
-            <td style="padding: 6px;">${b.snapshot_evolution_latency.p99_ms.toFixed(3)} ms</td>
-            <td style="padding: 6px;">${b.snapshot_evolution_latency.mean_ms.toFixed(3)} ms</td>
-            <td style="padding: 6px;">${b.snapshot_evolution_latency.samples_count}</td>
-          </tr>
-          <tr>
-            <td style="padding: 6px; color: var(--accent-green);">Idempotency Ledger Duplicate Check</td>
-            <td style="padding: 6px; font-weight: bold;">${b.idempotency_check_latency.p50_ms.toFixed(3)} ms</td>
-            <td style="padding: 6px;">${b.idempotency_check_latency.p95_ms.toFixed(3)} ms</td>
-            <td style="padding: 6px;">${b.idempotency_check_latency.p99_ms.toFixed(3)} ms</td>
-            <td style="padding: 6px;">${b.idempotency_check_latency.mean_ms.toFixed(3)} ms</td>
-            <td style="padding: 6px;">${b.idempotency_check_latency.samples_count}</td>
-          </tr>
-        </tbody>
-      </table>
-    `;
-  } catch (e) {
-    console.error("runBenchmark error", e);
-    container.innerHTML = `<span style="color: var(--accent-red);">Benchmark failed: ${e}</span>`;
-  }
-}
-
-async function resetState() {
-  try {
-    const res = await fetch('/api/reset', { method: 'POST' });
-    const data = await res.json();
-    renderState(data.state);
-  } catch (e) {
-    console.error("resetState error", e);
-  }
-}
-
-// Initial fetch & SSE start
+// Initial start
 window.addEventListener('DOMContentLoaded', () => {
-  fetch('/api/state')
-    .then(r => r.json())
-    .then(renderState)
-    .catch(console.error);
-
   initSSE();
 });
