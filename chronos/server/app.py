@@ -115,7 +115,7 @@ async def run_matrix():
     return {"status": "ok", "summary": summary.model_dump()}
 
 
-@app.post("/api/canonical_scenarios")
+@app.api_route("/api/canonical_scenarios", methods=["GET", "POST"])
 async def run_canonical_scenarios():
     from chronos.evaluation.canonical_scenarios import CanonicalScenarioRunner
     report = await CanonicalScenarioRunner.run_all_9_canonical_scenarios()
