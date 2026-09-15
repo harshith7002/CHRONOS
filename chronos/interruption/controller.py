@@ -155,6 +155,12 @@ class InterruptionController:
         if crit_match:
             slots["criterion"] = crit_match.group(1)
 
+        # Multimodal indicator / diagnostic correction patterns
+        if "power led" in cleaned or "power indicator" in cleaned or "power light" in cleaned:
+            slots["indicator_type"] = "power_led"
+        elif "overheating" in cleaned or "temp warning" in cleaned or "coolant" in cleaned:
+            slots["indicator_type"] = "temp_warning"
+
         return slots
 
     def handle_interruption(

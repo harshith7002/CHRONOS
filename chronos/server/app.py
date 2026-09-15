@@ -18,6 +18,7 @@ from chronos.clock.virtual_clock import VirtualClock
 from chronos.engine.chronos_agent import ChronosAgent
 from chronos.evaluation.harness import ReplayHarness
 from chronos.evaluation.metrics import MetricsCollector
+from chronos.evaluation.benchmarks import LatencyBenchmark
 
 app = FastAPI(title="CHRONOS Temporal Control Plane", version="1.0.0")
 
@@ -89,6 +90,30 @@ async def run_demo():
     return {"status": "ok", "report": report.model_dump(), "state": agent.get_state_summary()}
 
 
+@app.post("/api/run_chained")
+async def run_chained():
+    res = replay_harness.run_chained_dag_invalidation_scenario()
+    return {"status": "ok", "result": res, "state": agent.get_state_summary()}
+
+
+@app.post("/api/run_adversarial")
+async def run_adversarial():
+    res = replay_harness.run_adversarial_stale_booking_injection_scenario()
+    return {"status": "ok", "result": res, "state": agent.get_state_summary()}
+
+
+@app.post("/api/run_multimodal")
+async def run_multimodal():
+    res = replay_harness.run_multimodal_vision_correction_scenario()
+    return {"status": "ok", "result": res, "state": agent.get_state_summary()}
+
+
+@app.post("/api/run_benchmark")
+async def run_benchmark():
+    report = LatencyBenchmark.run_full_benchmark(iterations=500)
+    return {"status": "ok", "benchmark": report.model_dump()}
+
+
 @app.post("/api/reset")
 async def reset():
     agent.reset()
@@ -110,7 +135,6 @@ async def event_stream(request: Request):
 
         agent.event_log.subscribe(listener)
         try:
-            # Yield initial state
             init_payload = json.dumps({"type": "INIT", "state": agent.get_state_summary()})
             yield f"data: {init_payload}\n\n"
 
@@ -126,7 +150,6 @@ async def event_stream(request: Request):
                     })
                     yield f"data: {msg}\n\n"
                 except asyncio.TimeoutError:
-                    # Heartbeat
                     hb = json.dumps({"type": "HEARTBEAT", "state": agent.get_state_summary()})
                     yield f"data: {hb}\n\n"
         finally:

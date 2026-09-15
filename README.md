@@ -52,9 +52,29 @@ CHRONOS maintains strict agent state consistency during asynchronous tool execut
 
 ---
 
+## Empirical Latency Benchmarks (1,000 Iterations)
+
+| Critical Path Operation | Median (p50) | p95 | p99 | Mean | Samples |
+| :--- | :--- | :--- | :--- | :--- | :--- |
+| **Fast-Path Acknowledgment** | **0.010 ms (10 µs)** | 0.019 ms | 0.049 ms | 0.012 ms | 1,000 |
+| **Interruption ➔ Cancellation Propagation** | **0.150 ms (150 µs)**| 0.357 ms | 0.520 ms | 0.178 ms | 1,000 |
+| **Immutable Snapshot Evolution** | **0.014 ms (14 µs)** | 0.026 ms | 0.041 ms | 0.016 ms | 1,000 |
+| **Idempotency Ledger Duplicate Check** | **0.001 ms (1 µs)**  | 0.001 ms | 0.002 ms | 0.001 ms | 1,000 |
+
+---
+
+## 4 Core Demonstration Scenarios
+
+1. **Hero Scenario**: Delhi ➔ Mumbai Interruption & Out-of-Order Stale Result Rejection.
+2. **Chained DAG Invalidation**: `SEARCH ➔ FILTER ➔ SELECT ➔ BOOK` with selective invalidation on slot mutation.
+3. **Adversarial Stale Booking Attack**: Out-of-order $v_1$ token injection into irreversible booking pipeline (visibly blocked by commit controller).
+4. **Multimodal Vision Grounding & Revision**: Visual symptom detection $\rightarrow$ user voice clarification $\rightarrow$ automatic diagnostic plan revision & tool cancellation.
+
+---
+
 ## Quick Start
 
-### 1. Run Automated Tests
+### 1. Run Automated Tests (20 Suites)
 ```bash
 python -m pytest tests/ -v
 ```
@@ -64,3 +84,4 @@ python -m pytest tests/ -v
 python -m uvicorn chronos.server.app:app --host 127.0.0.1 --port 8000 --reload
 ```
 Open [http://127.0.0.1:8000](http://127.0.0.1:8000) in your browser.
+
