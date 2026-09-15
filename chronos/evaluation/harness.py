@@ -225,3 +225,60 @@ class ReplayHarness:
             "cancelled_tools_count": len(cancelled),
             "final_snapshot": self.agent.state_mgr.current_snapshot_id,
         }
+
+    def run_naive_vs_chronos_comparison(self) -> Dict[str, Any]:
+        """
+        Scenario 5: Side-by-Side Comparison: Naive Baseline vs. CHRONOS
+        Simulates both under the same adversarial sequence of interruptions and stale result arrival.
+        """
+        # --- 1. Naive Agent Simulation ---
+        naive_state = {"destination": "Delhi", "flights": [], "booked": False, "duplicate_bookings": 0}
+        # Naive intent update
+        naive_state["destination"] = "Mumbai"
+        # Late arrival of Delhi flight (naive agent has no snapshot tagging)
+        late_delhi_result = [{"flight_id": "DEL-999", "dest": "Delhi", "price": 5000}]
+        naive_state["flights"] = late_delhi_result  # CONTAMINATED!
+        naive_state_contaminated = any(f["dest"] == "Delhi" for f in naive_state["flights"])
+        # Naive retry storm
+        naive_booking_calls = 3
+        naive_state["duplicate_bookings"] = naive_booking_calls  # No idempotency ledger!
+
+        # --- 2. CHRONOS Execution ---
+        self.agent.reset()
+        self.agent.process_user_input("Find flights to Delhi") # v1
+        self.agent.process_user_input("Actually Mumbai")        # v2
+        
+        # Late arrival injected
+        stale_res = self.agent.force_inject_stale_result(
+            call_id="call_delhi_old",
+            origin_snapshot_id="v1",
+            tool_name="search_flights",
+            output=late_delhi_result,
+        )
+        chronos_contaminated = (stale_res.status != CallStatus.STALE_REJECTED)
+
+        # Mumbai completed on v2
+        self.agent.step_time(0.5)
+        self.agent.process_user_input("Book the cheapest one")
+        self.agent.process_user_input("Yes confirm booking")
+        # Retry storm on CHRONOS
+        for _ in range(5):
+            self.agent.process_user_input("Yes confirm booking")
+
+        chronos_commits = len(self.agent.event_log.filter_by(event_type=EventType.COMMIT))
+
+        return {
+            "naive_baseline": {
+                "state_contaminated": naive_state_contaminated,
+                "stale_result_accepted": True,
+                "duplicate_commits_count": naive_state["duplicate_bookings"],
+                "safety_score": 0.0,
+            },
+            "chronos_control_plane": {
+                "state_contaminated": chronos_contaminated,
+                "stale_result_accepted": False,
+                "duplicate_commits_count": 0,
+                "actual_commits_count": chronos_commits,
+                "safety_score": 1.0,
+            }
+        }

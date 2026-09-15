@@ -39,3 +39,18 @@ def test_latency_benchmarks_metrics():
     assert report.interruption_cancellation_latency.p50_ms >= 0.0
     assert report.snapshot_evolution_latency.p50_ms >= 0.0
     assert report.idempotency_check_latency.p50_ms >= 0.0
+
+
+def test_naive_vs_chronos_comparison():
+    harness = ReplayHarness()
+    res = harness.run_naive_vs_chronos_comparison()
+    # Naive agent failed
+    assert res["naive_baseline"]["state_contaminated"] is True
+    assert res["naive_baseline"]["duplicate_commits_count"] > 0
+    assert res["naive_baseline"]["safety_score"] == 0.0
+
+    # CHRONOS succeeded
+    assert res["chronos_control_plane"]["state_contaminated"] is False
+    assert res["chronos_control_plane"]["duplicate_commits_count"] == 0
+    assert res["chronos_control_plane"]["actual_commits_count"] == 1
+    assert res["chronos_control_plane"]["safety_score"] == 1.0

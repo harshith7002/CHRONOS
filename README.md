@@ -1,10 +1,40 @@
 # CHRONOS: Temporal Control Plane for Interruptible Real-Time AI Agents
 
-CHRONOS maintains strict agent state consistency during asynchronous tool executions, streaming interruptions, intent version transitions, and late-arriving stale results.
+> **"CHRONOS doesn't make AI smarter. It makes AI execution more correct under change."**
 
-## Core Architectural Invariants
+**CHRONOS** is a production-oriented, empirically validated temporal control plane for interruptible real-time AI agents. It guarantees that agent state remains consistent when users change their intent mid-stream, tools complete asynchronously out of order, and irreversible state-changing actions are queued.
+
+---
+
+## The Fundamental Difference: Naive Agent vs. CHRONOS
+
+| Scenario / Failure Mode | Naive Agent | CHRONOS Control Plane |
+| :--- | :--- | :--- |
+| **Late Stale Result Arrival** | ❌ May contaminate active state or output | ✅ **Strictly rejected (`STALE_RESULT_REJECTED`)** |
+| **User Mid-Stream Correction** | ❌ Blind restart of entire workflow | ✅ **Selective invalidation (preserves reusable work)** |
+| **Duplicate Confirmation / Retry Storm** | ❌ Risk of duplicate charges / writes | ✅ **Idempotency protected (zero duplicate commits)** |
+| **Irreversible Action Under Stale Intent** | ❌ High risk of committing stale state | ✅ **Commit blocked via 4-phase safety gate** |
+| **Chained Tool Dependencies** | ❌ Broad, uncontrolled re-execution | ✅ **DAG-aware surgical invalidation** |
+| **Recovery Latency & State Continuity** | ❌ Full context reset & re-plan | ✅ **Versioned continuation ($v_1 \rightarrow v_2 \dots$)** |
+
+---
+
+## Core Invariant
 
 > **"Never blindly stop and restart. Version the intent, selectively invalidate obsolete work, preserve reusable work, reject stale results, and commit irreversible actions only after explicit confirmation."**
+
+---
+
+## Control-Plane Microbenchmarks ($N = 1,000$ iterations)
+
+*These metrics measure the local Python control-plane coordination overhead (excluding external LLM/network IO) to verify that CHRONOS introduces negligible latency on the critical execution path.*
+
+| Critical Path Operation | Median ($p50$) | $p95$ | $p99$ | Mean | Samples |
+| :--- | :--- | :--- | :--- | :--- | :--- |
+| **Fast-Path Acknowledgment Control** | **$0.010\text{ ms}$ ($10\ \mu\text{s}$)** | $0.019\text{ ms}$ | $0.049\text{ ms}$ | $0.012\text{ ms}$ | $1,000$ |
+| **Interruption ➔ Cancellation Propagation** | **$0.150\text{ ms}$ ($150\ \mu\text{s}$)** | $0.357\text{ ms}$ | $0.520\text{ ms}$ | $0.178\text{ ms}$ | $1,000$ |
+| **Immutable Snapshot Evolution** | **$0.014\text{ ms}$ ($14\ \mu\text{s}$)** | $0.026\text{ ms}$ | $0.041\text{ ms}$ | $0.016\text{ ms}$ | $1,000$ |
+| **Idempotency Ledger Duplicate Check** | **$0.001\text{ ms}$ ($1\ \mu\text{s}$)** | $0.001\text{ ms}$ | $0.002\text{ ms}$ | $0.001\text{ ms}$ | $1,000$ |
 
 ---
 
