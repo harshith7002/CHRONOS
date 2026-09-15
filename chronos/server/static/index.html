@@ -19,17 +19,15 @@
         <span class="brand-name">CHRONOS</span>
       </a>
       <div class="nav-links">
-        <a href="#problem" class="nav-link">Problem</a>
-        <a href="#samsung-usecases" class="nav-link">Samsung Use Cases</a>
-        <a href="#hero-demo" class="nav-link">Demo</a>
-        <a href="#principles" class="nav-link">Principles</a>
-        <a href="#dag" class="nav-link">DAG</a>
-        <a href="#invariants" class="nav-link">Invariants</a>
-        <a href="#evidence" class="nav-link">Benchmarks</a>
+        <a href="#samsung-usecases" class="nav-link">Samsung Ecosystem</a>
+        <a href="#hero-demo" class="nav-link">Live Demo</a>
         <a href="#rubric" class="nav-link">Theme 05 Rubric</a>
-        <a href="#overhead" class="nav-link">Overhead</a>
         <a href="#architecture" class="nav-link">Architecture</a>
-        <a href="#inspector" class="btn btn-secondary" style="padding: 6px 14px; font-size: 0.8rem; margin-left: 6px;">Inspector</a>
+        <div class="nav-fastpath-chip">
+          <span class="nav-fastpath-dot"></span>
+          <span>10 µs FAST-PATH</span>
+        </div>
+        <button class="btn btn-secondary" style="padding: 6px 14px; font-size: 0.8rem; margin-left: 6px;" onclick="toggleInspector()">⚡ Inspector</button>
       </div>
     </div>
   </nav>
@@ -63,7 +61,7 @@
           <div class="proof-label">Duplicate Commits</div>
         </div>
         <div class="proof-card">
-          <div class="proof-num" style="color: var(--brand-cyan);">2,000</div>
+          <div class="proof-num" style="color: var(--brand-cyan);" id="hero-executions-counter">2,000</div>
           <div class="proof-label">Adversarial Executions</div>
         </div>
       </div>
@@ -114,35 +112,62 @@
 
     <!-- SECTION 2.5: SAMSUNG PRISM KEY USE CASES -->
     <section id="samsung-usecases" class="section">
-      <div class="section-tag">SAMSUNG PRISM · THEME 05 USE CASES</div>
+      <div class="section-tag">SAMSUNG PRISM · THEME 05 ECOSYSTEM</div>
       <h2 class="section-title">Engineered for Samsung Device eXperience</h2>
-      <p class="section-subtitle">Directly addressing the four core real-world failure modes highlighted in the Samsung Electronics Theme 05 evaluation specification.</p>
+      <p class="section-subtitle">Real-time interruptible agency across Galaxy Mobile, SmartThings IoT, Bespoke Appliances, and In-Car Cockpit with zero stale contamination.</p>
+
+      <!-- Samsung Ecosystem Hero Showcase Graphic -->
+      <div class="samsung-showcase-hero">
+        <img src="/static/images/samsung_ecosystem.jpg" alt="Samsung Connected Agent Ecosystem" class="samsung-showcase-img">
+        <div class="samsung-showcase-overlay">
+          <div>
+            <div class="samsung-showcase-title">Cross-Device Real-Time Temporal Control Plane</div>
+            <div class="samsung-showcase-subtitle">Unified DAG state coordination across Galaxy Z Fold/Ultra, SmartThings Hub, Harman Digital Cockpit, and Bespoke Smart Home. Zero stale mutations, zero duplicate execution.</div>
+          </div>
+          <button class="btn btn-primary" style="font-size: 0.8rem; padding: 8px 16px;" onclick="startHeroInteractiveDemo()">Test Live Interruption ➔</button>
+        </div>
+      </div>
 
       <div class="samsung-usecases-grid">
-        <!-- Use Case 1 -->
-        <div class="samsung-usecase-card" onclick="loadSamsungPreset('incar')">
+        <!-- Use Case 1: In-Car -->
+        <div class="samsung-usecase-card" onclick="loadSamsungPreset('in-car')">
+          <div class="samsung-card-media">
+            <img src="/static/images/incar_navigation.jpg" alt="In-Car Navigation">
+            <div class="samsung-media-overlay-tag">HARMAN COCKPIT</div>
+          </div>
           <div class="samsung-usecase-tag">In-Car & Hands-Free</div>
           <div class="samsung-usecase-title">Dynamic Route Recalculation</div>
           <div class="samsung-usecase-desc">Instantly drops stale route calculations when destination updates mid-execution. Zero lag, zero outdated GPS guidance.</div>
           <div class="samsung-badge-pill">
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><polyline points="9 12 11 14 15 10"/></svg>
-            <span>Auto-drop obsolete GPS routes</span>
+            <span>Auto-drop obsolete GPS routes (&lt;150µs)</span>
           </div>
         </div>
 
-        <!-- Use Case 2 -->
+        <!-- Use Case 2: SmartThings -->
         <div class="samsung-usecase-card" onclick="loadSamsungPreset('smartthings')">
+          <div class="samsung-card-media">
+            <img src="/static/images/smartthings_grounding.jpg" alt="SmartThings Camera Grounding">
+            <div class="samsung-media-overlay-tag">GALAXY AR VISION</div>
+          </div>
           <div class="samsung-usecase-tag">SmartThings & Field Repair</div>
           <div class="samsung-usecase-title">Camera Frame Grounding</div>
-          <div class="samsung-usecase-desc">Grounds appliance & Smart TV queries in camera frames and manuals. Automatically corrects diagnosis when the user pans camera.</div>
+          <div class="samsung-usecase-desc">Grounds appliance queries directly in camera frames. Automatically corrects diagnosis when the user pans camera from Washing Machine to Fridge.</div>
           <div class="samsung-badge-pill">
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><polyline points="9 12 11 14 15 10"/></svg>
             <span>Live PNG frame + Error code E-404</span>
           </div>
         </div>
 
-        <!-- Use Case 3 -->
+        <!-- Use Case 3: Customer Support -->
         <div class="samsung-usecase-card" onclick="loadSamsungPreset('support')">
+          <div class="samsung-card-media" style="background: radial-gradient(circle at center, rgba(6, 182, 212, 0.25) 0%, #000 70%); display: flex; align-items: center; justify-content: center;">
+            <div style="text-align: center; color: var(--brand-cyan);">
+              <svg width="42" height="42" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><polyline points="9 12 11 14 15 10"/></svg>
+              <div style="font-size: 0.75rem; font-weight: 700; margin-top: 6px; letter-spacing: 1px;">IDEMPOTENCY GUARD</div>
+            </div>
+            <div class="samsung-media-overlay-tag">1-KEY TOKEN</div>
+          </div>
           <div class="samsung-usecase-tag">Customer Support Bots</div>
           <div class="samsung-usecase-title">Zero Double-Booking Guard</div>
           <div class="samsung-usecase-desc">Dynamically adjusts flight & service parameters mid-stream without double-charging or creating duplicate tickets.</div>
@@ -152,8 +177,15 @@
           </div>
         </div>
 
-        <!-- Use Case 4 -->
+        <!-- Use Case 4: Voice & Accessibility -->
         <div class="samsung-usecase-card" onclick="loadSamsungPreset('accessibility')">
+          <div class="samsung-card-media" style="background: radial-gradient(circle at center, rgba(16, 185, 129, 0.25) 0%, #000 70%); display: flex; align-items: center; justify-content: center;">
+            <div style="text-align: center; color: var(--brand-emerald);">
+              <svg width="42" height="42" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/></svg>
+              <div style="font-size: 0.75rem; font-weight: 700; margin-top: 6px; letter-spacing: 1px;">ACOUSTIC DEBOUNCE</div>
+            </div>
+            <div class="samsung-media-overlay-tag">VOICE & AUDIO</div>
+          </div>
           <div class="samsung-usecase-tag">Voice & Accessibility</div>
           <div class="samsung-usecase-title">Speech Hesitation Repair</div>
           <div class="samsung-usecase-desc">Handles conversational self-repairs ("9 AM... wait, actually 2 PM") seamlessly without generating false commits or premature actions.</div>

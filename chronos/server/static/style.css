@@ -1159,6 +1159,128 @@ body {
 }
 
 /* -------------------------------------------------------------
+   SAMSUNG ECOSYSTEM VISUAL SHOWCASE & IMAGE CARDS
+   ------------------------------------------------------------- */
+.samsung-showcase-hero {
+  position: relative;
+  border-radius: 16px;
+  overflow: hidden;
+  margin-bottom: 24px;
+  border: 1px solid rgba(6, 182, 212, 0.3);
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.6), 0 0 30px rgba(6, 182, 212, 0.12);
+  background: #000;
+}
+
+.samsung-showcase-img {
+  width: 100%;
+  height: auto;
+  max-height: 420px;
+  object-fit: cover;
+  display: block;
+  transition: transform 0.4s ease;
+}
+
+.samsung-showcase-hero:hover .samsung-showcase-img {
+  transform: scale(1.015);
+}
+
+.samsung-showcase-overlay {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: linear-gradient(0deg, rgba(8, 9, 13, 0.95) 0%, rgba(8, 9, 13, 0.75) 60%, transparent 100%);
+  padding: 24px 28px;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+
+.samsung-showcase-title {
+  font-size: 1.25rem;
+  font-weight: 800;
+  color: #ffffff;
+  letter-spacing: -0.3px;
+}
+
+.samsung-showcase-subtitle {
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+  margin-top: 4px;
+  max-width: 650px;
+  line-height: 1.5;
+}
+
+.samsung-card-media {
+  width: 100%;
+  height: 140px;
+  border-radius: 10px;
+  overflow: hidden;
+  margin-bottom: 12px;
+  position: relative;
+  background: #000;
+}
+
+.samsung-card-media img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.3s ease;
+}
+
+.samsung-usecase-card:hover .samsung-card-media img {
+  transform: scale(1.05);
+}
+
+.samsung-media-overlay-tag {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  background: rgba(0, 0, 0, 0.75);
+  backdrop-filter: blur(8px);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  color: #fff;
+  font-size: 0.65rem;
+  font-weight: 700;
+  padding: 3px 8px;
+  border-radius: 12px;
+  font-family: var(--font-mono);
+  letter-spacing: 0.5px;
+}
+
+.nav-fastpath-chip {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.75rem;
+  font-family: var(--font-mono);
+  font-weight: 700;
+  color: var(--brand-emerald);
+  background: rgba(16, 185, 129, 0.1);
+  border: 1px solid rgba(16, 185, 129, 0.3);
+  padding: 4px 10px;
+  border-radius: 20px;
+  white-space: nowrap;
+}
+
+.nav-fastpath-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--brand-emerald);
+  box-shadow: 0 0 8px var(--brand-emerald);
+  animation: pulse-dot 1.8s infinite;
+}
+
+@keyframes pulse-dot {
+  0% { transform: scale(0.9); opacity: 0.7; }
+  50% { transform: scale(1.3); opacity: 1; }
+  100% { transform: scale(0.9); opacity: 0.7; }
+}
+
+/* -------------------------------------------------------------
    DUAL-QUEUE INTERACTION VISUALIZER
    ------------------------------------------------------------- */
 .dual-queue-grid {
