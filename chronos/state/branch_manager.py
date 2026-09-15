@@ -54,6 +54,11 @@ class TemporalStateManager:
         # Initialize root snapshot v0
         self._init_root_snapshot()
 
+    @property
+    def snapshots(self) -> Dict[str, StateSnapshot]:
+        with self._lock:
+            return dict(self._snapshots)
+
     def _init_root_snapshot(self) -> None:
         root = StateSnapshot(
             snapshot_id="v0",

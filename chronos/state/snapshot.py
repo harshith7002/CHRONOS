@@ -41,6 +41,14 @@ class StateSnapshot(BaseModel):
     # Goal description
     goal: Optional[str] = None
 
+    @property
+    def slots(self) -> Dict[str, Any]:
+        return self.intent_slots
+
+    @property
+    def intent_name(self) -> str:
+        return self.goal or "travel_booking"
+
     model_config = {
         "frozen": True  # Never mutate historical snapshots
     }

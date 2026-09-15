@@ -345,6 +345,10 @@ class ChronosAgent:
                 "recent_events": [e.model_dump() for e in events[-50:]],
             }
 
+    def get_last_response(self) -> Optional[AgentResponse]:
+        with self._lock:
+            return self._last_final_response
+
     def reset(self) -> None:
         with self._lock:
             self.clock.reset()

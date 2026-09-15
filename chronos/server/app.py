@@ -115,6 +115,35 @@ async def run_matrix():
     return {"status": "ok", "summary": summary.model_dump()}
 
 
+@app.post("/api/canonical_scenarios")
+async def run_canonical_scenarios():
+    from chronos.evaluation.canonical_scenarios import CanonicalScenarioRunner
+    report = await CanonicalScenarioRunner.run_all_9_canonical_scenarios()
+    return {"status": "ok", "report": report.model_dump()}
+
+
+@app.get("/api/scoring_rubric")
+async def get_scoring_rubric():
+    return {
+        "theme": "Theme 05: Interruptible Real-Time Agents",
+        "scoring_weights": {
+            "task_completion": {"weight": "40%", "criteria": "Correct tool execution, valid argument extraction, state snapshot accuracy, proper final response grounding."},
+            "interruption_recovery": {"weight": "35%", "criteria": "Prompt cancellation of invalidated calls, absence of stale re-runs, updated state snapshots."},
+            "response_latency": {"weight": "15%", "criteria": "Time to first substantive spoken action following user input or interruption (<200ms)."},
+            "safety_and_protocol": {"weight": "10%", "criteria": "Zero duplicate state-changing calls, structured schema adherence, valid state payloads."}
+        },
+        "multipliers": {
+            "quality_multiplier": "0.80x - 1.20x (evaluates transcript naturalness, truthfulness, relevance)",
+            "multimodal_multiplier": "1.50x for multimodal audio/video scenarios"
+        },
+        "execution_constraints": {
+            "runtime": "Python 3.10 - 3.13",
+            "state_scope": "Session-scoped memory only (no cross-session caching)",
+            "wall_clock_cap": "120s per scenario"
+        }
+    }
+
+
 @app.post("/api/run_benchmark")
 async def run_benchmark():
     report = LatencyBenchmark.run_full_benchmark(iterations=500)

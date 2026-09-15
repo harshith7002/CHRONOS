@@ -37,6 +37,14 @@ class ToolRegistry:
     def get_tool(self, name: str) -> Optional[ToolDefinition]:
         return self._definitions.get(name)
 
+    def get(self, name: str) -> Optional[ToolDefinition]:
+        """Convenience alias for get_tool."""
+        return self._definitions.get(name)
+
+    def register(self, definition: ToolDefinition, handler: Optional[Callable[..., Any]] = None) -> None:
+        """Convenience alias for register_tool."""
+        self.register_tool(definition, handler)
+
     def get_handler(self, name: str) -> Optional[Callable[..., Any]]:
         return self._handlers.get(name)
 
