@@ -9,512 +9,548 @@
 <body>
 
   <!-- Top Sticky Navigation Bar -->
-  <header class="navbar">
-    <div class="container nav-container">
-      <a href="#" class="nav-brand">
-        <div class="brand-badge-logo">C</div>
+  <header class="top-nav">
+    <div class="container nav-flex">
+      <a href="#" class="brand-wrap">
+        <div class="brand-icon">C</div>
         <div>
-          <span class="brand-text-name">CHRONOS ONE</span>
-          <span class="brand-edition-tag">AI ASSISTANT</span>
+          <span class="brand-text">CHRONOS ONE</span>
+          <span class="brand-badge">REAL-TIME AI</span>
         </div>
       </a>
 
-      <nav class="nav-links">
-        <a href="#interactive-assistant" class="nav-link-item">Assistant</a>
-        <a href="#demo-modes" class="nav-link-item" onclick="switchMode('travel')">Travel</a>
-        <a href="#demo-modes" class="nav-link-item" onclick="switchMode('home')">Smart Home</a>
-        <a href="#demo-modes" class="nav-link-item" onclick="switchMode('drive')">Drive</a>
-        <a href="#how-it-works" class="nav-link-item">How It Works</a>
-        <a href="#benchmarks-section" class="nav-link-item">Evidence</a>
+      <nav class="nav-menu">
+        <a href="#interactive-demo" class="nav-link">Experience</a>
+        <a href="#problem-breakdown" class="nav-link">The Difference</a>
+        <a href="#modes-showcase" class="nav-link">Capabilities</a>
+        <a href="#four-principles" class="nav-link">Principles</a>
+        <a href="#evidence-section" class="nav-link">Evidence</a>
       </nav>
 
-      <div class="nav-right-actions">
-        <div class="engine-status-pill">
-          <span class="status-dot-pulse"></span>
-          <span>Fast-Path Floor (&lt;10 µs)</span>
-        </div>
-        <button class="btn-secondary-pill" onclick="toggleInspectorDrawer()">
-          ⚡ Advanced Inspector
+      <div class="nav-actions">
+        <a href="#interactive-demo" class="btn-nav-primary">Try Interactive Demo</a>
+        <button class="btn-engineer-toggle" onclick="toggleEngineerDrawer()">
+          <span>⚡ For Engineers</span>
         </button>
       </div>
     </div>
   </header>
 
-  <div class="container">
-
-    <!-- ----------------------------------------------------------------------
-         HERO SECTION: PRODUCT POSITIONING & CORE CONVERSATIONAL ASSISTANT
-         ---------------------------------------------------------------------- -->
-    <section class="hero-section" id="interactive-assistant">
-      <div class="hero-pill-tag">
-        <span>✨ REAL-TIME INTENT CONTROL</span>
+  <!-- ------------------------------------------------------------------------
+       1. HERO SECTION: CINEMATIC VISUAL STORYTELLING
+       ------------------------------------------------------------------------ -->
+  <section class="container hero-wrapper">
+    <!-- Left Column: Storytelling & Action -->
+    <div>
+      <div class="hero-tag-pill">
+        <span>✨ INTENT EVOLUTION ENGINE</span>
       </div>
 
-      <h1 class="hero-heading">
-        An AI assistant that keeps up<br>when you change your mind.
+      <h1 class="hero-main-title">
+        An AI assistant that keeps up when you change your mind.
       </h1>
-      
-      <div class="hero-tagline-motto">Plan. Correct. Interrupt. Continue.</div>
-      <p class="hero-subtext">
+
+      <div class="hero-motto">
+        Plan. Correct. Interrupt. Continue.
+      </div>
+
+      <p class="hero-description">
         Powered by the CHRONOS temporal control plane — keeping execution 100% consistent across late async responses, mid-stream edits, and irreversible bookings.
       </p>
 
-      <!-- Conversational UI Card -->
-      <div class="assistant-card-main">
-        <div class="chat-input-wrapper">
-          <input 
-            type="text" 
-            id="main-user-input"
-            class="chat-text-input" 
-            placeholder="Try: Plan a trip to Mumbai Friday morning and find the cheapest flight..."
-            value="Plan a trip to Mumbai Friday morning and find the cheapest flight"
-          />
-          <button class="btn-mic-action" id="btn-mic-trigger" onclick="simulateSpeechInput()">
-            🎙️ <span>Speak</span>
-          </button>
-          <button class="btn-send-action" onclick="handleMainInputSend()">
-            Send ➔
-          </button>
-        </div>
-
-        <!-- Quick Suggestions -->
-        <div class="quick-chips-row">
-          <span class="quick-chip-label">Try asking:</span>
-          <button class="prompt-chip-btn" onclick="applyQuickPrompt('Plan a trip to Mumbai Friday morning and find the cheapest flight')">
-            ✈️ "Trip to Mumbai Friday morning"
-          </button>
-          <button class="prompt-chip-btn" onclick="applyQuickPrompt('Actually make that Saturday morning')">
-            ⚡ "Actually Saturday morning"
-          </button>
-          <button class="prompt-chip-btn" onclick="applyQuickPrompt('Actually Chennai, not Mumbai')">
-            🔄 "Actually Chennai, not Mumbai"
-          </button>
-        </div>
-
-        <!-- Live Status Ribbon -->
-        <div class="live-status-ribbon">
-          <div class="status-ribbon-col">
-            <span class="ribbon-col-title">Current Request</span>
-            <span class="ribbon-col-val" id="ribbon-current-request">Mumbai · Friday Morning · Cheapest Flight</span>
-          </div>
-          <div class="status-ribbon-col">
-            <span class="ribbon-col-title">Current Plan</span>
-            <span class="ribbon-col-val" id="ribbon-current-plan" style="color: var(--brand-cyan);">Search flights ➔ Compare prices ➔ Gated Booking</span>
-          </div>
-          <div class="status-ribbon-col">
-            <span class="ribbon-col-title">Live Status</span>
-            <span class="ribbon-col-val" id="ribbon-live-status" style="color: var(--brand-emerald);">✓ Active & Protected</span>
-          </div>
-        </div>
+      <div class="hero-cta-group">
+        <a href="#interactive-demo" class="btn-hero-action">Try CHRONOS ONE ➔</a>
+        <button class="btn-hero-secondary" onclick="simulateHeroPulse()">Watch Interruption Pulse</button>
       </div>
-    </section>
-
-    <!-- ----------------------------------------------------------------------
-         FLAGSHIP PRACTICAL EXPERIENCES (THREE MODES)
-         ---------------------------------------------------------------------- -->
-    <section id="demo-modes" style="margin-bottom: 40px;">
-      
-      <!-- Mode Switcher Tabs -->
-      <div class="mode-switcher-container">
-        <div class="mode-switcher-tabs">
-          <button class="mode-tab-btn active" id="tab-travel" onclick="switchMode('travel')">
-            ✈️ TRAVEL ASSISTANT
-          </button>
-          <button class="mode-tab-btn" id="tab-home" onclick="switchMode('home')">
-            🏠 SMART HOME VISION
-          </button>
-          <button class="mode-tab-btn" id="tab-drive" onclick="switchMode('drive')">
-            🚗 IN-CAR DRIVE
-          </button>
-        </div>
-      </div>
-
-      <!-- ====================================================================
-           MODE 1: TRAVEL ASSISTANT (CONVERSATION + FLIGHTS + INTERRUPTION)
-           ==================================================================== -->
-      <div class="interactive-app-view active" id="view-travel">
-        <div class="travel-demo-grid">
-          
-          <!-- Left: Dialog Stream & Natural Interruption Deck -->
-          <div class="assistant-dialog-panel">
-            <div>
-              <div style="font-size: 0.8rem; font-weight: 700; color: var(--text-dim); text-transform: uppercase; margin-bottom: 12px;">
-                Live Conversational Stream
-              </div>
-
-              <div class="dialog-messages-stream" id="travel-messages-stream">
-                <div class="chat-bubble user">
-                  "Find me the cheapest flight to Mumbai Friday morning."
-                </div>
-                <div class="chat-bubble assistant">
-                  "I found 3 flight options from Chennai to Mumbai for Friday morning. The cheapest is Indigo 6E-204 at <strong>₹7,200</strong>."
-                </div>
-              </div>
-            </div>
-
-            <!-- Interruption & Stale Simulation Controls -->
-            <div class="interrupt-action-box">
-              <div class="interrupt-box-title">
-                ⚡ Test Natural Mid-Stream Interruption:
-              </div>
-              <div class="interrupt-buttons-row">
-                <button class="btn-interrupt-trigger" onclick="triggerNaturalInterruption('Actually Saturday')">
-                  🗣️ "Actually Saturday"
-                </button>
-                <button class="btn-interrupt-trigger" onclick="triggerNaturalInterruption('Actually Chennai, not Mumbai')">
-                  🗣️ "Actually Chennai, not Mumbai"
-                </button>
-                <button class="btn-stale-inject" onclick="injectLateStaleResult()">
-                  ⚠️ Simulate Late Delayed Result
-                </button>
-              </div>
-              <div style="font-size: 0.75rem; color: var(--text-muted);" id="interruption-feedback-text">
-                Click any button above to see CHRONOS surgically update the plan without crashing or restarting from scratch.
-              </div>
-            </div>
-          </div>
-
-          <!-- Right: Interactive Flight Options & Booking Checkout -->
-          <div class="flight-results-panel">
-            <div class="flight-panel-header">
-              <div>
-                <span class="flight-panel-title">Available Flights</span>
-                <span style="font-size: 0.78rem; color: var(--text-muted); margin-left: 8px;" id="flight-route-header">Chennai (MAA) ➔ Mumbai (BOM)</span>
-              </div>
-              <span class="flight-date-tag" id="flight-date-badge">Friday, 10 Oct</span>
-            </div>
-
-            <!-- Flight Cards List -->
-            <div class="flight-cards-list" id="flight-cards-container">
-              <!-- Flight 1 -->
-              <div class="flight-card-item selected" onclick="selectFlight(0, '₹7,200', '08:10')">
-                <div>
-                  <div class="flight-times">08:10 ➔ 10:15 <span style="font-size: 0.75rem; color: var(--text-dim);">(2h 05m)</span></div>
-                  <div class="flight-route" id="flight-card-route-0">Indigo 6E-204 · Direct</div>
-                </div>
-                <div style="text-align: right;">
-                  <div class="flight-price" id="flight-price-0">₹7,200</div>
-                  <button class="btn-select-flight">Select</button>
-                </div>
-              </div>
-
-              <!-- Flight 2 -->
-              <div class="flight-card-item" onclick="selectFlight(1, '₹7,850', '09:40')">
-                <div>
-                  <div class="flight-times">09:40 ➔ 11:55 <span style="font-size: 0.75rem; color: var(--text-dim);">(2h 15m)</span></div>
-                  <div class="flight-route" id="flight-card-route-1">Air India AI-582 · Direct</div>
-                </div>
-                <div style="text-align: right;">
-                  <div class="flight-price" id="flight-price-1">₹7,850</div>
-                  <button class="btn-select-flight">Select</button>
-                </div>
-              </div>
-
-              <!-- Flight 3 -->
-              <div class="flight-card-item" onclick="selectFlight(2, '₹8,100', '06:25')">
-                <div>
-                  <div class="flight-times">06:25 ➔ 08:35 <span style="font-size: 0.75rem; color: var(--text-dim);">(2h 10m)</span></div>
-                  <div class="flight-route" id="flight-card-route-2">Akasa Air QP-1102 · Direct</div>
-                </div>
-                <div style="text-align: right;">
-                  <div class="flight-price" id="flight-price-2">₹8,100</div>
-                  <button class="btn-select-flight">Select</button>
-                </div>
-              </div>
-            </div>
-
-            <!-- Stale Result Protected Banner -->
-            <div class="stale-notice-card" id="stale-notice-banner">
-              <div class="stale-notice-title">✓ Current Plan Protected</div>
-              <div class="stale-notice-body">
-                An older search result arrived. CHRONOS ignored it because your request had already changed.
-              </div>
-              <div class="technical-chip-expand">
-                Technical log: STALE_RESULT_REJECTED (v1 response discarded, active snapshot is v2)
-              </div>
-            </div>
-
-            <!-- Safe Gated 4-Phase Booking Card -->
-            <div class="booking-checkout-panel visible" id="booking-checkout-box">
-              <div class="checkout-header">Confirm Your Booking</div>
-              <div class="checkout-details-row">
-                <span id="checkout-flight-desc">Chennai ➔ Mumbai (08:10)</span>
-                <strong style="color: var(--brand-emerald);" id="checkout-price-val">₹7,200</strong>
-              </div>
-              <button class="btn-confirm-commit" id="btn-confirm-booking" onclick="executeSafeBookingCommit()">
-                Book for <span id="btn-book-price">₹7,200</span> ➔
-              </button>
-            </div>
-          </div>
-
-        </div>
-      </div>
-
-      <!-- ====================================================================
-           MODE 2: SMART HOME / SMARTTHINGS (CAMERA INSPECTION & CORRECTION)
-           ==================================================================== -->
-      <div class="interactive-app-view" id="view-home">
-        <div class="smartthings-stage-card">
-          
-          <!-- Camera Inspection Viewport -->
-          <div class="camera-preview-box">
-            <div class="camera-hud-overlay">
-              <span>● BESPOKE APPLIANCE CAM #04</span>
-              <span id="cam-fps-text">60 FPS · 1080P</span>
-            </div>
-            
-            <div class="detection-bounding-box" id="appliance-bounding-box">
-              <div style="font-size: 2rem; margin-bottom: 6px;">🧊</div>
-              <div style="font-size: 0.85rem; font-weight: 700;" id="appliance-indicator-label">Freezer Warning Indicator</div>
-              <div style="font-size: 0.72rem; color: var(--text-dim);" id="appliance-code-text">Detection ID: CAM-W401</div>
-            </div>
-          </div>
-
-          <!-- Dialog & Live Self-Correction -->
-          <div style="display: flex; flex-direction: column; justify-content: space-between;">
-            <div>
-              <div style="font-size: 0.8rem; font-weight: 700; color: var(--brand-cyan); text-transform: uppercase; margin-bottom: 10px;">
-                SmartThings Multimodal Grounding
-              </div>
-              
-              <div class="dialog-messages-stream" id="home-messages-stream">
-                <div class="chat-bubble assistant">
-                  "I analyzed the camera frame and detected a <strong>freezer warning light</strong>. Scheduling diagnostic tool..."
-                </div>
-              </div>
-            </div>
-
-            <div class="interrupt-action-box">
-              <div class="interrupt-box-title" style="color: var(--brand-cyan);">
-                🗣️ Correct the Assistant Mid-Diagnosis:
-              </div>
-              <div class="interrupt-buttons-row">
-                <button class="btn-interrupt-trigger" style="border-color: var(--brand-cyan); color: var(--brand-cyan);" onclick="correctHomeDiagnosis()">
-                  "No, that's the power light."
-                </button>
-                <button class="btn-secondary-pill" onclick="resetHomeScenario()">
-                  ↺ Reset Camera
-                </button>
-              </div>
-              <div style="font-size: 0.75rem; color: var(--text-muted);" id="home-feedback-msg">
-                See how the diagnostic tool cancels immediately and applies the new interpretation without starting over.
-              </div>
-            </div>
-          </div>
-
-        </div>
-      </div>
-
-      <!-- ====================================================================
-           MODE 3: DRIVE / HARMAN COCKPIT (DYNAMIC GPS REROUTING)
-           ==================================================================== -->
-      <div class="interactive-app-view" id="view-drive">
-        <div class="cockpit-stage-card">
-          
-          <!-- Cockpit Vector Map Viewport -->
-          <div class="cockpit-map-viewport">
-            <svg viewBox="0 0 450 250" style="width: 100%; height: 100%;">
-              <!-- Background Roads Grid -->
-              <path d="M 30 180 Q 150 40 400 60" fill="none" stroke="rgba(255,255,255,0.08)" stroke-width="12" />
-              <path d="M 30 180 Q 200 230 400 60" fill="none" stroke="rgba(255,255,255,0.08)" stroke-width="12" />
-
-              <!-- Active Route Path -->
-              <path id="active-route-path" d="M 30 180 Q 150 40 400 60" fill="none" stroke="var(--brand-cyan)" stroke-width="6" stroke-linecap="round" />
-
-              <!-- Vehicle Indicator -->
-              <circle cx="30" cy="180" r="8" fill="#fff" stroke="var(--brand-blue)" stroke-width="3"/>
-              <!-- Destination Pin -->
-              <circle cx="400" cy="60" r="10" fill="var(--brand-rose)" />
-              <text x="400" y="40" fill="#fff" font-size="10" font-weight="700" text-anchor="middle">AIRPORT T2</text>
-            </svg>
-
-            <div style="position: absolute; bottom: 12px; left: 16px; background: rgba(0,0,0,0.7); padding: 6px 12px; border-radius: var(--radius-sm); font-size: 0.75rem;">
-              Route: <strong id="drive-route-name" style="color: var(--brand-cyan);">Highway 10 Express</strong> · ETA: <strong id="drive-eta-val">42 min</strong>
-            </div>
-          </div>
-
-          <!-- Spoken Navigation Guidance & Detour Interruption -->
-          <div style="display: flex; flex-direction: column; justify-content: space-between;">
-            <div>
-              <div style="font-size: 0.8rem; font-weight: 700; color: var(--brand-cyan); text-transform: uppercase; margin-bottom: 10px;">
-                Harman Cockpit Voice Navigation
-              </div>
-
-              <div class="dialog-messages-stream" id="drive-messages-stream">
-                <div class="chat-bubble assistant">
-                  "Navigating to Airport via <strong>Highway 10</strong>. Estimated arrival at 09:22 AM."
-                </div>
-              </div>
-            </div>
-
-            <div class="interrupt-action-box">
-              <div class="interrupt-box-title" style="color: var(--brand-amber);">
-                🗣️ Issue Spoken Detour:
-              </div>
-              <div class="interrupt-buttons-row">
-                <button class="btn-interrupt-trigger" onclick="rerouteDriveCockpit()">
-                  "Don't take the highway. Use the old road."
-                </button>
-                <button class="btn-secondary-pill" onclick="resetDriveScenario()">
-                  ↺ Reset Route
-                </button>
-              </div>
-              <div style="font-size: 0.75rem; color: var(--text-muted);" id="drive-feedback-msg">
-                Route updated without continuing the outdated instruction or calculating redundant GPS nodes.
-              </div>
-            </div>
-          </div>
-
-        </div>
-      </div>
-
-    </section>
-
-    <!-- ----------------------------------------------------------------------
-         UNIFIED EXPLANATION: HOW CHRONOS WORKS UNDER THE HOOD
-         ---------------------------------------------------------------------- -->
-    <section class="how-it-works-section" id="how-it-works">
-      <div class="section-header-center">
-        <h2 class="section-title-large">All three experiences use the same temporal control layer.</h2>
-        <p class="section-subtitle-text">
-          When reality changes mid-stream, CHRONOS guarantees your AI agent never gets confused, leaks stale results, or double-commits actions.
-        </p>
-      </div>
-
-      <!-- 7-Step Lifecycle Diagram -->
-      <div class="execution-flow-bar">
-        <div class="flow-node">
-          <div class="flow-node-num">1</div>
-          <div class="flow-node-text">USER SPEAKS</div>
-        </div>
-        <div class="flow-arrow-sep">➔</div>
-        <div class="flow-node">
-          <div class="flow-node-num">2</div>
-          <div class="flow-node-text">UNDERSTAND</div>
-        </div>
-        <div class="flow-arrow-sep">➔</div>
-        <div class="flow-node">
-          <div class="flow-node-num">3</div>
-          <div class="flow-node-text">EXECUTE</div>
-        </div>
-        <div class="flow-arrow-sep">➔</div>
-        <div class="flow-node" style="color: var(--brand-amber);">
-          <div class="flow-node-num" style="border-color: var(--brand-amber); color: var(--brand-amber);">4</div>
-          <div class="flow-node-text" style="color: var(--brand-amber);">USER CHANGES MIND</div>
-        </div>
-        <div class="flow-arrow-sep">➔</div>
-        <div class="flow-node">
-          <div class="flow-node-num">5</div>
-          <div class="flow-node-text">UPDATE PLAN</div>
-        </div>
-        <div class="flow-arrow-sep">➔</div>
-        <div class="flow-node" style="color: var(--brand-emerald);">
-          <div class="flow-node-num" style="border-color: var(--brand-emerald); color: var(--brand-emerald);">6</div>
-          <div class="flow-node-text" style="color: var(--brand-emerald);">PROTECT STATE</div>
-        </div>
-        <div class="flow-arrow-sep">➔</div>
-        <div class="flow-node">
-          <div class="flow-node-num">7</div>
-          <div class="flow-node-text">CONTINUE</div>
-        </div>
-      </div>
-
-      <!-- 4 Core Pillars Grid -->
-      <div class="pillars-grid">
-        <div class="pillar-card">
-          <div class="pillar-icon-badge">📌</div>
-          <h4>1. Version Intent</h4>
-          <p>Every user thought and turn creates an immutable snapshot. Nothing is overwritten blindly.</p>
-        </div>
-
-        <div class="pillar-card">
-          <div class="pillar-icon-badge">✂️</div>
-          <h4>2. Selective Cancellation</h4>
-          <p>Only obsolete tools are cancelled. Reusable background results are safely preserved.</p>
-        </div>
-
-        <div class="pillar-card">
-          <div class="pillar-icon-badge">🛡️</div>
-          <h4>3. Stale-Result Rejection</h4>
-          <p>Late out-of-order network responses are discarded immediately by comparing snapshot lineage.</p>
-        </div>
-
-        <div class="pillar-card">
-          <div class="pillar-icon-badge">🔒</div>
-          <h4>4. Safe 4-Phase Commit</h4>
-          <p>Irreversible writes and payments require explicit gate validation and strict 1-key idempotency.</p>
-        </div>
-      </div>
-    </section>
-
-    <!-- ----------------------------------------------------------------------
-         EVIDENCE & BENCHMARKS SECTION
-         ---------------------------------------------------------------------- -->
-    <section class="advanced-benchmarks-section" id="benchmarks-section">
-      <div class="section-header-center">
-        <h2 class="section-title-large">Empirically Verified Performance</h2>
-        <p class="section-subtitle-text">
-          Validated against a 2,000-run adversarial benchmark across 20 failure categories.
-        </p>
-      </div>
-
-      <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px;">
-        <div class="pillar-card" style="text-align: center;">
-          <div style="font-size: 2.2rem; font-weight: 800; color: var(--brand-emerald); margin-bottom: 4px;">0</div>
-          <div style="font-weight: 700; margin-bottom: 4px;">Stale Violations</div>
-          <p>Zero state contaminations under out-of-order responses.</p>
-        </div>
-
-        <div class="pillar-card" style="text-align: center;">
-          <div style="font-size: 2.2rem; font-weight: 800; color: var(--brand-emerald); margin-bottom: 4px;">0</div>
-          <div style="font-weight: 700; margin-bottom: 4px;">Duplicate Commits</div>
-          <p>Strict idempotency guarantees at most 1 irreversible write.</p>
-        </div>
-
-        <div class="pillar-card" style="text-align: center;">
-          <div style="font-size: 2.2rem; font-weight: 800; color: var(--brand-cyan); margin-bottom: 4px;">0.007 ms</div>
-          <div style="font-weight: 700; margin-bottom: 4px;">Fast-Path Floor ACK</div>
-          <p>Acoustic debouncing releases the floor in 7 microseconds.</p>
-        </div>
-      </div>
-    </section>
-
-  </div>
-
-  <!-- ----------------------------------------------------------------------
-       ADVANCED INSPECTOR SLIDE-OVER DRAWER (TECHNICAL LAYER)
-       ---------------------------------------------------------------------- -->
-  <aside class="inspector-drawer-panel" id="inspector-drawer-panel">
-    <div class="drawer-top-bar">
-      <div>
-        <strong style="color: var(--brand-cyan);">⚡ Advanced Technical Inspector</strong>
-        <div style="font-size: 0.72rem; color: var(--text-dim);">Live Temporal Control Plane & Event Stream</div>
-      </div>
-      <button class="btn-secondary-pill" onclick="toggleInspectorDrawer()">✕ Close</button>
     </div>
 
-    <div class="drawer-content-scroll">
-      <!-- 7 Invariants Checklist -->
-      <div style="background: rgba(0,0,0,0.3); border: 1px solid var(--border-subtle); border-radius: var(--radius-sm); padding: 14px;">
-        <div style="font-size: 0.78rem; font-weight: 700; color: #fff; margin-bottom: 8px;">The 7 CHRONOS Invariants:</div>
-        <div style="font-size: 0.72rem; color: var(--text-secondary); display: flex; flex-direction: column; gap: 4px;">
-          <div><span style="color: var(--brand-emerald);">✓ INV-1:</span> Stale results cannot mutate active intent.</div>
-          <div><span style="color: var(--brand-emerald);">✓ INV-2:</span> Only active snapshot can commit writes.</div>
-          <div><span style="color: var(--brand-emerald);">✓ INV-3:</span> 1 Idempotency key permits at most 1 commit.</div>
-          <div><span style="color: var(--brand-emerald);">✓ INV-4:</span> Selective DAG dependency cascade.</div>
-          <div><span style="color: var(--brand-emerald);">✓ INV-5:</span> Superseded branches cannot write state.</div>
-          <div><span style="color: var(--brand-emerald);">✓ INV-6:</span> Unconfirmed writes strictly blocked.</div>
-          <div><span style="color: var(--brand-emerald);">✓ INV-7:</span> Historical snapshots strictly immutable.</div>
+    <!-- Right Column: Hero Temporal Interactive Visual -->
+    <div class="hero-visual-card">
+      <div class="hero-visual-header">
+        <span>TEMPORAL INTENT TIMELINE</span>
+        <span style="color: var(--cyan); font-weight: 700;">● ZERO-STALE GUARANTEE</span>
+      </div>
+
+      <div class="temporal-canvas-wrap">
+        <svg id="hero-temporal-svg" viewBox="0 0 460 260">
+          <!-- Rendered dynamically by app.js -->
+        </svg>
+      </div>
+
+      <button class="visual-pulse-btn" onclick="simulateHeroPulse()">
+        ⚡ Trigger Intent Evolution (v1 ➔ v2 Interruption)
+      </button>
+    </div>
+  </section>
+
+  <!-- ------------------------------------------------------------------------
+       2. PRODUCT DEMO: FLAGSHIP TRAVEL ASSISTANT (TRY IT NOW)
+       ------------------------------------------------------------------------ -->
+  <section class="container product-showcase-section" id="interactive-demo">
+    <div class="section-headline-group">
+      <span class="section-subtitle-pill">Live Interactive Product</span>
+      <h2 class="section-main-heading">Experience the assistant in action</h2>
+      <p class="section-lede">
+        Speak, correct, and interrupt naturally. Watch how CHRONOS adapts without dropping context or crashing.
+      </p>
+    </div>
+
+    <!-- Split Interactive Card -->
+    <div class="interactive-stage-card">
+      
+      <!-- Left Column: Conversational Stream & Signature Pulse -->
+      <div class="dialog-stream-pane">
+        <div>
+          <!-- Signature CHRONOS Interruption Pulse Box -->
+          <div class="pulse-task-tracker" id="pulse-tracker-box">
+            <div class="task-pulse-wave" id="task-pulse-wave"></div>
+            <div class="pulse-task-header">
+              <span>Active Request Status</span>
+              <span id="tracker-version-tag" style="color: var(--cyan);">SNAPSHOT v1</span>
+            </div>
+            <div class="pulse-task-value" id="tracker-task-text">
+              Mumbai · Friday Morning · Under ₹10,000
+            </div>
+          </div>
+
+          <!-- Chat Bubbles -->
+          <div class="chat-bubble-stream" id="chat-messages-container">
+            <div class="msg-bubble user">
+              "Find me the cheapest flight to Mumbai Friday morning."
+            </div>
+            <div class="msg-bubble assistant">
+              "I found 3 direct flight options from Chennai to Mumbai. The cheapest is Indigo 6E-204 at <strong>₹7,200</strong>."
+            </div>
+          </div>
+        </div>
+
+        <!-- Interactive Triggers -->
+        <div class="interactive-triggers-wrap">
+          <div style="font-size: 0.75rem; font-weight: 700; color: var(--text-dim); text-transform: uppercase;">
+            Interrupt Natural Flow:
+          </div>
+          <div class="interruption-chips-row">
+            <button class="btn-chip-action" onclick="handleUserCorrection('Actually Saturday')">
+              🗣️ "Actually Saturday"
+            </button>
+            <button class="btn-chip-action" onclick="handleUserCorrection('Actually Chennai to Delhi')">
+              🗣️ "Actually Delhi, not Mumbai"
+            </button>
+            <button class="btn-chip-action rose" onclick="triggerStaleInjectionDemo()">
+              ⚠️ Simulate Late Delayed Result
+            </button>
+          </div>
         </div>
       </div>
 
-      <!-- Raw Event Stream Telemetry -->
-      <div>
-        <div style="font-size: 0.78rem; font-weight: 700; color: var(--text-muted); margin-bottom: 6px;">
-          Live Event-Sourced Ledger (SSE):
+      <!-- Right Column: Rich Flight Results & 4-Phase Gated Booking -->
+      <div class="results-cards-pane">
+        <div class="results-top-bar">
+          <div>
+            <strong style="font-size: 1rem; color: #fff;">Available Flights</strong>
+            <span style="font-size: 0.78rem; color: var(--text-muted); margin-left: 8px;" id="flight-destination-label">Chennai ➔ Mumbai</span>
+          </div>
+          <span style="font-size: 0.78rem; color: var(--cyan); background: rgba(0, 229, 255, 0.1); padding: 3px 10px; border-radius: var(--radius-full); font-weight: 600;" id="flight-date-tag">
+            Friday, 10 Oct
+          </span>
         </div>
-        <div class="raw-telemetry-feed" id="raw-telemetry-feed">
-          <!-- Live events streamed here -->
+
+        <!-- Flight Ticket 1 -->
+        <div class="flight-ticket-card selected" id="ticket-card-0" onclick="selectFlightOption(0, '₹7,200', '08:10')">
+          <div class="ticket-airline-info">
+            <span class="ticket-flight-no" id="airline-name-0">Indigo 6E-204</span>
+            <span class="ticket-route">Economy · Direct · Free Meal</span>
+          </div>
+          <div class="ticket-time-wrap">
+            <div class="ticket-time">08:10 ➔ 10:15</div>
+            <div class="ticket-duration">2h 05m non-stop</div>
+          </div>
+          <div class="ticket-price-wrap">
+            <div class="ticket-price" id="price-tag-0">₹7,200</div>
+            <button class="btn-book-ticket">Select</button>
+          </div>
+        </div>
+
+        <!-- Flight Ticket 2 -->
+        <div class="flight-ticket-card" id="ticket-card-1" onclick="selectFlightOption(1, '₹7,850', '09:40')">
+          <div class="ticket-airline-info">
+            <span class="ticket-flight-no" id="airline-name-1">Air India AI-582</span>
+            <span class="ticket-route">Economy · Direct · Cabin Baggage</span>
+          </div>
+          <div class="ticket-time-wrap">
+            <div class="ticket-time">09:40 ➔ 11:55</div>
+            <div class="ticket-duration">2h 15m non-stop</div>
+          </div>
+          <div class="ticket-price-wrap">
+            <div class="ticket-price" id="price-tag-1">₹7,850</div>
+            <button class="btn-book-ticket">Select</button>
+          </div>
+        </div>
+
+        <!-- Flight Ticket 3 -->
+        <div class="flight-ticket-card" id="ticket-card-2" onclick="selectFlightOption(2, '₹8,100', '06:25')">
+          <div class="ticket-airline-info">
+            <span class="ticket-flight-no" id="airline-name-2">Akasa Air QP-1102</span>
+            <span class="ticket-route">Economy · Direct</span>
+          </div>
+          <div class="ticket-time-wrap">
+            <div class="ticket-time">06:25 ➔ 08:35</div>
+            <div class="ticket-duration">2h 10m non-stop</div>
+          </div>
+          <div class="ticket-price-wrap">
+            <div class="ticket-price" id="price-tag-2">₹8,100</div>
+            <button class="btn-book-ticket">Select</button>
+          </div>
+        </div>
+
+        <!-- Stale Result Shield Card -->
+        <div class="stale-shield-card" id="stale-shield-card">
+          <div style="font-weight: 700; color: var(--emerald); font-size: 0.88rem; margin-bottom: 2px;">
+            ✓ Current Plan Protected
+          </div>
+          <div style="font-size: 0.82rem; color: var(--text-main);">
+            An older search result arrived. CHRONOS ignored it because your request had already changed.
+          </div>
+          <div style="font-family: var(--font-mono); font-size: 0.68rem; color: var(--text-dim); margin-top: 4px;">
+            Technical: STALE_RESULT_REJECTED (v1 ≠ current v2)
+          </div>
+        </div>
+
+        <!-- Booking Gate Checkout Box -->
+        <div class="booking-gate-card show" id="booking-checkout-panel">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+            <div>
+              <div style="font-size: 0.75rem; color: var(--text-dim); text-transform: uppercase; font-weight: 700;">Selected Flight</div>
+              <div style="font-weight: 700; color: #fff;" id="checkout-route-summary">Chennai ➔ Mumbai (08:10)</div>
+            </div>
+            <div style="text-align: right;">
+              <div style="font-size: 0.75rem; color: var(--text-dim); text-transform: uppercase; font-weight: 700;">Total Fare</div>
+              <div style="font-size: 1.25rem; font-weight: 800; color: var(--emerald);" id="checkout-price-display">₹7,200</div>
+            </div>
+          </div>
+
+          <button class="btn-commit-final" id="btn-commit-booking" onclick="executeGatedCommit()">
+            Book for <span id="btn-price-label">₹7,200</span> ➔
+          </button>
+        </div>
+
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ------------------------------------------------------------------------
+       3. CINEMATIC PROBLEM SECTION: NAIVE AGENT vs CHRONOS
+       ------------------------------------------------------------------------ -->
+  <section class="container problem-cinema-section" id="problem-breakdown">
+    <div class="section-headline-group">
+      <span class="section-subtitle-pill" style="color: var(--rose);">The Asynchronous Dilemma</span>
+      <h2 class="section-main-heading">What happens when you change your mind mid-task?</h2>
+      <p class="section-lede">
+        Traditional AI agents blindly accept late out-of-order responses. CHRONOS protects your active state.
+      </p>
+    </div>
+
+    <div class="cinema-split-grid">
+      <!-- Naive Agent Collision -->
+      <div class="cinema-card naive">
+        <div class="cinema-badge bad">✕ NAIVE UNVERSIONED AGENT</div>
+        <div class="cinema-visual-box">
+          <div style="color: var(--rose); font-weight: 800; font-size: 1.1rem; margin-bottom: 6px;">
+            💥 OUT-OF-ORDER STATE CORRUPTION
+          </div>
+          <p style="font-size: 0.8rem; color: var(--text-muted); max-width: 320px;">
+            User said "Actually Mumbai", but late Delhi result arrived 200ms later and overwrote active intent.
+          </p>
+          <div style="margin-top: 10px; font-size: 0.75rem; color: var(--rose); font-weight: 700;">
+            Result: Wrong flight booked & double-charged.
+          </div>
+        </div>
+        <p style="font-size: 0.85rem; color: var(--text-muted);">
+          Conventional architectures lack temporal versioning — leading to silent bugs, race conditions, and corrupted transactional commits.
+        </p>
+      </div>
+
+      <!-- CHRONOS Protected Solution -->
+      <div class="cinema-card chronos">
+        <div class="cinema-badge good">✓ CHRONOS TEMPORAL CONTROL PLANE</div>
+        <div class="cinema-visual-box" style="background: radial-gradient(circle at center, rgba(16, 185, 129, 0.1) 0%, #000 80%);">
+          <div style="color: var(--emerald); font-weight: 800; font-size: 1.1rem; margin-bottom: 6px;">
+            🛡️ STALE RESULT BLOCKED · CURRENT STATE SAFE
+          </div>
+          <p style="font-size: 0.8rem; color: var(--text-muted); max-width: 320px;">
+            Lineage check detects origin snapshot v1 is obsolete. Late result is discarded before mutating state.
+          </p>
+          <div style="margin-top: 10px; font-size: 0.75rem; color: var(--emerald); font-weight: 700;">
+            Result: Exactly 1 verified Mumbai booking executed.
+          </div>
+        </div>
+        <p style="font-size: 0.85rem; color: var(--text-muted);">
+          Every intent change creates an immutable snapshot. Only the active snapshot can commit state-changing actions.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ------------------------------------------------------------------------
+       4. THREE PRODUCT EXPERIENCES (TRAVEL, SMART HOME, DRIVE)
+       ------------------------------------------------------------------------ -->
+  <section class="container product-experiences-section" id="modes-showcase">
+    <div class="section-headline-group">
+      <span class="section-subtitle-pill">Multi-Surface Continuity</span>
+      <h2 class="section-main-heading">Engineered for everyday interaction</h2>
+      <p class="section-lede">
+        The same temporal control plane powers conversational travel, smart home computer vision, and hands-free in-car navigation.
+      </p>
+    </div>
+
+    <!-- Experience 1: Travel -->
+    <div class="experience-card-large">
+      <div>
+        <div class="experience-tag-pill">📱 GALAXY MOBILE & WEARABLE</div>
+        <h3 style="font-size: 1.6rem; font-weight: 800; margin-bottom: 10px;">Speech Self-Correction & Travel</h3>
+        <p style="font-size: 0.92rem; color: var(--text-muted);">
+          When users self-repair mid-sentence, CHRONOS mutates only the modified slot while preserving reusable search computation in the background.
+        </p>
+        <div class="spoken-quote-bubble">
+          "Friday 9 AM... wait, actually Saturday morning."
+        </div>
+        <div style="font-size: 0.82rem; color: var(--emerald); font-weight: 600;">
+          ✓ Reusable search cache preserved · Instant recovery in &lt;150 µs
+        </div>
+      </div>
+      <div>
+        <img src="/static/images/hero_flagship.jpg" alt="Galaxy Travel AI Assistant" style="width: 100%; border-radius: var(--radius-lg); border: 1px solid var(--border-subtle);">
+      </div>
+    </div>
+
+    <!-- Experience 2: Smart Home Vision -->
+    <div class="experience-card-large">
+      <div>
+        <img src="/static/images/smartthings_grounding.jpg" alt="SmartThings Appliance Vision" style="width: 100%; border-radius: var(--radius-lg); border: 1px solid var(--border-subtle);">
+      </div>
+      <div>
+        <div class="experience-tag-pill" style="color: var(--amber);">🏠 SMARTTHINGS HOME VISION</div>
+        <h3 style="font-size: 1.6rem; font-weight: 800; margin-bottom: 10px;">Camera Frame Grounding & Diagnostic Revision</h3>
+        <p style="font-size: 0.92rem; color: var(--text-muted);">
+          When a user clarifies visual context, outdated diagnostic tools cancel immediately without leaving orphaned background routines.
+        </p>
+        <div class="spoken-quote-bubble" style="border-left-color: var(--amber);">
+          "No, that's the power light, not a warning indicator."
+        </div>
+        <div style="font-size: 0.82rem; color: var(--emerald); font-weight: 600;">
+          ✓ Old diagnostic cancelled · New interpretation applied instantly
+        </div>
+      </div>
+    </div>
+
+    <!-- Experience 3: Drive Cockpit -->
+    <div class="experience-card-large">
+      <div>
+        <div class="experience-tag-pill" style="color: var(--violet);">🚗 HARMAN CONNECTED COCKPIT</div>
+        <h3 style="font-size: 1.6rem; font-weight: 800; margin-bottom: 10px;">Hands-Free In-Car Rerouting</h3>
+        <p style="font-size: 0.92rem; color: var(--text-muted);">
+          Spoken route detours halt obsolete GPS calculation nodes immediately, ensuring zero outdated audio turns reach the driver.
+        </p>
+        <div class="spoken-quote-bubble" style="border-left-color: var(--violet);">
+          "Don't take the highway. Use the old road."
+        </div>
+        <div style="font-size: 0.82rem; color: var(--emerald); font-weight: 600;">
+          ✓ Outdated highway guidance purged · Reroute computed with zero lag
+        </div>
+      </div>
+      <div>
+        <img src="/static/images/incar_navigation.jpg" alt="In-Car Navigation" style="width: 100%; border-radius: var(--radius-lg); border: 1px solid var(--border-subtle);">
+      </div>
+    </div>
+  </section>
+
+  <!-- ------------------------------------------------------------------------
+       5. FOUR CORE PRINCIPLES (HORIZONTAL STORYTELLING)
+       ------------------------------------------------------------------------ -->
+  <section class="container principles-section" id="four-principles">
+    <div class="section-headline-group">
+      <span class="section-subtitle-pill">How CHRONOS Works</span>
+      <h2 class="section-main-heading">The 4 Pillars of Correct Execution</h2>
+      <p class="section-lede">
+        Four formal principles enforced across every state transition and tool execution.
+      </p>
+    </div>
+
+    <div class="principles-grid-row">
+      <div class="principle-item-card">
+        <div class="principle-num">01 / VERSION</div>
+        <h4 class="principle-title">Version Intent</h4>
+        <p class="principle-desc">
+          Every thought, turn, and edit creates an immutable snapshot. State is never blindly mutated in place.
+        </p>
+      </div>
+
+      <div class="principle-item-card">
+        <div class="principle-num">02 / CANCEL</div>
+        <h4 class="principle-title">Selective Cancellation</h4>
+        <p class="principle-desc">
+          Only tasks dependent on modified slots are pruned. Reusable asynchronous results are preserved.
+        </p>
+      </div>
+
+      <div class="principle-item-card">
+        <div class="principle-num">03 / REJECT</div>
+        <h4 class="principle-title">Stale-Result Shield</h4>
+        <p class="principle-desc">
+          Late out-of-order network responses are discarded immediately before mutating the active context.
+        </p>
+      </div>
+
+      <div class="principle-item-card">
+        <div class="principle-num">04 / COMMIT</div>
+        <h4 class="principle-title">Safe 4-Phase Commit</h4>
+        <p class="principle-desc">
+          Irreversible actions require explicit gate confirmation and strict 1-key idempotency protection.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ------------------------------------------------------------------------
+       6. PERFORMANCE & EVIDENCE SECTION
+       ------------------------------------------------------------------------ -->
+  <section class="container metrics-stats-section" id="evidence-section">
+    <div class="section-headline-group">
+      <span class="section-subtitle-pill">Local Control-Plane Overhead</span>
+      <h2 class="section-main-heading">Microsecond-Precision Latency</h2>
+      <p class="section-lede">
+        Measured over N = 1,000 local iterations. CHRONOS adds negligible overhead to agent critical paths.
+      </p>
+    </div>
+
+    <div class="stats-grid-4col">
+      <div class="stat-metric-card">
+        <div class="stat-big-number">10 µs</div>
+        <div class="stat-label-text">Fast-Path Floor ACK</div>
+      </div>
+
+      <div class="stat-metric-card">
+        <div class="stat-big-number">150 µs</div>
+        <div class="stat-label-text">Interruption ➔ Cancel</div>
+      </div>
+
+      <div class="stat-metric-card">
+        <div class="stat-big-number">14 µs</div>
+        <div class="stat-label-text">Snapshot Evolution</div>
+      </div>
+
+      <div class="stat-metric-card">
+        <div class="stat-big-number">1 µs</div>
+        <div class="stat-label-text">Idempotency Check</div>
+      </div>
+    </div>
+
+    <!-- Adversarial Benchmark Proof Banner -->
+    <div style="background: var(--bg-surface); border: 1px solid var(--border-subtle); border-radius: var(--radius-xl); padding: 32px; text-align: center;">
+      <span class="section-subtitle-pill" style="color: var(--emerald);">2,000-Run Adversarial Benchmark</span>
+      <h3 style="font-size: 1.8rem; font-weight: 800; margin: 8px 0 16px 0;">"We don't just claim correctness — we attacked it."</h3>
+      <p style="font-size: 0.92rem; color: var(--text-muted); max-width: 600px; margin: 0 auto 24px auto;">
+        Evaluated across 20 distinct failure categories and 100 randomized seeds under intense fault injection.
+      </p>
+
+      <div style="display: flex; justify-content: center; gap: 40px; flex-wrap: wrap;">
+        <div>
+          <div style="font-size: 2.2rem; font-weight: 800; color: var(--emerald);">0</div>
+          <div style="font-size: 0.75rem; color: var(--text-muted); font-weight: 700; text-transform: uppercase;">Invariant Violations</div>
+        </div>
+        <div>
+          <div style="font-size: 2.2rem; font-weight: 800; color: var(--emerald);">0</div>
+          <div style="font-size: 0.75rem; color: var(--text-muted); font-weight: 700; text-transform: uppercase;">Duplicate Commits</div>
+        </div>
+        <div>
+          <div style="font-size: 2.2rem; font-weight: 800; color: var(--emerald);">0</div>
+          <div style="font-size: 0.75rem; color: var(--text-muted); font-weight: 700; text-transform: uppercase;">Stale Contaminations</div>
+        </div>
+        <div>
+          <div style="font-size: 2.2rem; font-weight: 800; color: var(--cyan);">100%</div>
+          <div style="font-size: 0.75rem; color: var(--text-muted); font-weight: 700; text-transform: uppercase;">Task Completion</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ------------------------------------------------------------------------
+       7. FLOWING ARCHITECTURE PIPELINE
+       ------------------------------------------------------------------------ -->
+  <section class="container architecture-flow-section">
+    <div class="section-headline-group">
+      <span class="section-subtitle-pill">System Architecture</span>
+      <h2 class="section-main-heading">The Flow of Temporal Control</h2>
+    </div>
+
+    <div class="pipeline-flow-container">
+      <div class="pipeline-step-node">
+        <div class="pipeline-node-circle">👤</div>
+        <span class="pipeline-node-name">USER</span>
+      </div>
+      <div class="pipeline-arrow-conn">➔</div>
+      <div class="pipeline-step-node">
+        <div class="pipeline-node-circle">🎙️</div>
+        <span class="pipeline-node-name">PERCEPTION</span>
+      </div>
+      <div class="pipeline-arrow-conn">➔</div>
+      <div class="pipeline-step-node">
+        <div class="pipeline-node-circle">⏱️</div>
+        <span class="pipeline-node-name">TEMPORAL STATE</span>
+      </div>
+      <div class="pipeline-arrow-conn">➔</div>
+      <div class="pipeline-step-node">
+        <div class="pipeline-node-circle">⚡</div>
+        <span class="pipeline-node-name">EXECUTION</span>
+      </div>
+      <div class="pipeline-arrow-conn">➔</div>
+      <div class="pipeline-step-node">
+        <div class="pipeline-node-circle">🛡️</div>
+        <span class="pipeline-node-name">SAFETY GATES</span>
+      </div>
+      <div class="pipeline-arrow-conn">➔</div>
+      <div class="pipeline-step-node">
+        <div class="pipeline-node-circle">⚙️</div>
+        <span class="pipeline-node-name">TOOLS</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ------------------------------------------------------------------------
+       8. ADVANCED INSPECTOR SLIDE-OVER DRAWER (FOR ENGINEERS)
+       ------------------------------------------------------------------------ -->
+  <aside class="engineer-drawer-panel" id="engineer-drawer">
+    <div class="drawer-header-bar">
+      <div>
+        <strong style="color: var(--cyan); font-size: 0.95rem;">⚡ Engineering Control Plane</strong>
+        <div style="font-size: 0.72rem; color: var(--text-dim);">Live Execution Trace & Invariant Ledger</div>
+      </div>
+      <button class="btn-engineer-toggle" onclick="toggleEngineerDrawer()">✕ Close</button>
+    </div>
+
+    <div class="drawer-body-scroll">
+      <!-- 7 Invariants Checklist -->
+      <div style="background: rgba(0,0,0,0.4); border: 1px solid var(--border-subtle); border-radius: var(--radius-sm); padding: 14px;">
+        <div style="font-size: 0.78rem; font-weight: 700; color: #fff; margin-bottom: 8px;">The 7 CHRONOS Invariants:</div>
+        <div style="font-size: 0.72rem; color: var(--text-secondary); display: flex; flex-direction: column; gap: 4px;">
+          <div><span style="color: var(--emerald);">✓ INV-1:</span> Stale results cannot mutate active intent.</div>
+          <div><span style="color: var(--emerald);">✓ INV-2:</span> Only active snapshot can commit irreversible actions.</div>
+          <div><span style="color: var(--emerald);">✓ INV-3:</span> 1 Idempotency key permits at most 1 commit.</div>
+          <div><span style="color: var(--emerald);">✓ INV-4:</span> Invalidation of dependency cascades through DAG.</div>
+          <div><span style="color: var(--emerald);">✓ INV-5:</span> Superseded branches cannot execute writes.</div>
+          <div><span style="color: var(--emerald);">✓ INV-6:</span> Unconfirmed writes strictly blocked.</div>
+          <div><span style="color: var(--emerald);">✓ INV-7:</span> Historical snapshots strictly immutable.</div>
+        </div>
+      </div>
+
+      <!-- Real-Time SSE Log Stream -->
+      <div>
+        <div style="font-size: 0.78rem; font-weight: 700; color: var(--text-muted); margin-bottom: 8px;">
+          Live Server-Sent Events (SSE) Audit Ledger:
+        </div>
+        <div class="raw-telemetry-log" id="raw-sse-telemetry-feed">
+          <!-- Live events append here -->
         </div>
       </div>
     </div>

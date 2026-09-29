@@ -1,143 +1,154 @@
 /**
- * CHRONOS ONE | Practical Interactive AI Product Demo Controller
- * Powers natural conversational flows, 3 interactive modes, live plan revisions,
- * stale result rejection demonstrations, and the advanced technical inspector.
+ * CHRONOS ONE | World-Class Visual AI Product Experience Controller
+ * Powers animated hero temporal timelines, natural conversational interruptions,
+ * signature CHRONOS pulse waves, flight selection, and live SSE telemetry.
  */
 
 let eventSource = null;
-let currentSelectedFlight = { index: 0, price: "₹7,200", time: "08:10", route: "Chennai ➔ Mumbai" };
-let currentTravelDestination = "Mumbai";
-let currentTravelDate = "Friday, 10 Oct";
+let currentHeroStep = "v1"; // "v1", "interrupted", "v2_active"
+let currentFlightSelection = { index: 0, price: "₹7,200", time: "08:10", route: "Chennai ➔ Mumbai" };
+let activeDestination = "Mumbai";
+let activeDate = "Friday, 10 Oct";
 
 // -----------------------------------------------------------------------------
-// 1. Mode Switcher (TRAVEL, HOME, DRIVE)
+// 1. Hero Temporal Interactive Visualization
 // -----------------------------------------------------------------------------
-function switchMode(modeKey) {
-  const modes = ["travel", "home", "drive"];
-  modes.forEach((m) => {
-    const tabBtn = document.getElementById(`tab-${m}`);
-    const viewEl = document.getElementById(`view-${m}`);
-    if (tabBtn) tabBtn.classList.toggle("active", m === modeKey);
-    if (viewEl) viewEl.classList.toggle("active", m === modeKey);
-  });
+function renderHeroTemporalSVG(state) {
+  const svg = document.getElementById("hero-temporal-svg");
+  if (!svg) return;
+
+  let content = "";
+
+  if (state === "v1") {
+    content = `
+      <!-- Base Connecting Stream -->
+      <line x1="60" y1="130" x2="380" y2="130" stroke="rgba(255,255,255,0.15)" stroke-width="2" stroke-dasharray="6"/>
+      
+      <!-- Node: Intent v1 -->
+      <g transform="translate(30, 95)">
+        <rect width="130" height="70" rx="14" fill="rgba(8, 14, 28, 0.9)" stroke="#00e5ff" stroke-width="2" />
+        <circle cx="24" cy="35" r="5" fill="#00e5ff">
+          <animate attributeName="r" values="4;7;4" dur="1.5s" repeatCount="indefinite"/>
+        </circle>
+        <text x="75" y="32" fill="#00e5ff" font-size="11" font-weight="700" text-anchor="middle">SNAPSHOT v1</text>
+        <text x="75" y="50" fill="#94a3b8" font-size="10" text-anchor="middle">Destination: Delhi</text>
+      </g>
+
+      <!-- Node: Executing Tool -->
+      <g transform="translate(230, 95)">
+        <rect width="190" height="70" rx="14" fill="rgba(37, 99, 235, 0.15)" stroke="#00e5ff" stroke-width="2" />
+        <text x="95" y="32" fill="#fff" font-size="11" font-weight="700" text-anchor="middle">search_flights(v1)</text>
+        <text x="95" y="50" fill="#38bdf8" font-size="10" text-anchor="middle">⚡ Executing Async...</text>
+      </g>
+    `;
+  } else if (state === "interrupted") {
+    content = `
+      <!-- Branch Lines -->
+      <path d="M 130 130 Q 180 65 240 65" fill="none" stroke="rgba(245, 158, 11, 0.5)" stroke-width="2" stroke-dasharray="4"/>
+      <path d="M 130 130 Q 180 195 240 195" fill="none" stroke="#00e5ff" stroke-width="2"/>
+
+      <!-- Node: Obsolete v1 Branch (Faded / Superseded) -->
+      <g transform="translate(20, 100)">
+        <rect width="110" height="60" rx="12" fill="rgba(8, 14, 28, 0.9)" stroke="#00e5ff" stroke-width="2" />
+        <text x="55" y="35" fill="#00e5ff" font-size="10" font-weight="700" text-anchor="middle">INTENT v1</text>
+      </g>
+
+      <g transform="translate(230, 35)">
+        <rect width="200" height="60" rx="12" fill="rgba(245, 158, 11, 0.05)" stroke="#f59e0b" stroke-width="1.5" opacity="0.6" />
+        <text x="100" y="28" fill="#f59e0b" font-size="10" font-weight="700" text-anchor="middle">search_flights(Delhi)</text>
+        <text x="100" y="46" fill="#f59e0b" font-size="9" text-anchor="middle">🛑 SUPERSEDED (Cancelled)</text>
+      </g>
+
+      <!-- Node: Active v2 Branch -->
+      <g transform="translate(230, 165)">
+        <rect width="200" height="60" rx="12" fill="rgba(0, 229, 255, 0.15)" stroke="#00e5ff" stroke-width="2" />
+        <circle cx="22" cy="30" r="5" fill="#00e5ff">
+          <animate attributeName="r" values="3;7;3" dur="1s" repeatCount="indefinite"/>
+        </circle>
+        <text x="105" y="28" fill="#fff" font-size="10" font-weight="700" text-anchor="middle">search_flights(Mumbai)</text>
+        <text x="105" y="46" fill="#00e5ff" font-size="9" text-anchor="middle">⚡ ACTIVE v2 CONTINUATION</text>
+      </g>
+    `;
+  }
+
+  svg.innerHTML = content;
+}
+
+function simulateHeroPulse() {
+  currentHeroStep = currentHeroStep === "v1" ? "interrupted" : "v1";
+  renderHeroTemporalSVG(currentHeroStep);
 }
 
 // -----------------------------------------------------------------------------
-// 2. Main Conversational Input & Quick Chips
+// 2. Product Demo: Natural Interruption & Signature Pulse Wave
 // -----------------------------------------------------------------------------
-function applyQuickPrompt(text) {
-  const inputEl = document.getElementById("main-user-input");
-  if (inputEl) {
-    inputEl.value = text;
-    handleMainInputSend();
+function triggerPulseWaveAnimation() {
+  const wave = document.getElementById("task-pulse-wave");
+  if (wave) {
+    wave.classList.remove("trigger");
+    void wave.offsetWidth; // Force reflow
+    wave.classList.add("trigger");
   }
 }
 
-function simulateSpeechInput() {
-  const micBtn = document.getElementById("btn-mic-trigger");
-  if (micBtn) {
-    micBtn.innerHTML = "🔴 <span>Listening...</span>";
-    setTimeout(() => {
-      micBtn.innerHTML = "🎙️ <span>Speak</span>";
-      applyQuickPrompt("Actually make that Saturday morning");
-    }, 1200);
-  }
-}
+async function handleUserCorrection(correctionText) {
+  triggerPulseWaveAnimation();
 
-async function handleMainInputSend() {
-  const inputEl = document.getElementById("main-user-input");
-  if (!inputEl) return;
-  const val = inputEl.value.trim();
-  if (!val) return;
-
-  // Process text through CHRONOS backend
-  try {
-    const res = await fetch("/api/user_input", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ text: val }),
-    });
-    const data = await res.json();
-    console.log("CHRONOS response:", data);
-  } catch (e) {
-    console.error(e);
-  }
-
-  // Update Status Ribbon
-  const reqRibbon = document.getElementById("ribbon-current-request");
-  const planRibbon = document.getElementById("ribbon-current-plan");
-  const liveStatus = document.getElementById("ribbon-live-status");
-
-  if (val.toLowerCase().includes("saturday")) {
-    triggerNaturalInterruption("Actually Saturday");
-  } else if (val.toLowerCase().includes("chennai")) {
-    triggerNaturalInterruption("Actually Chennai, not Mumbai");
-  } else {
-    if (reqRibbon) reqRibbon.innerText = val;
-    if (planRibbon) planRibbon.innerText = "Search flights ➔ Compare prices ➔ Gated Booking";
-    if (liveStatus) liveStatus.innerText = "✓ Active & Protected";
-  }
-}
-
-// -----------------------------------------------------------------------------
-// 3. Flagship Travel Mode: Natural Interruption & Stale Rejection
-// -----------------------------------------------------------------------------
-function triggerNaturalInterruption(correctionText) {
-  const stream = document.getElementById("travel-messages-stream");
-  const feedback = document.getElementById("interruption-feedback-text");
-  const dateBadge = document.getElementById("flight-date-badge");
-  const routeHeader = document.getElementById("flight-route-header");
-  const ribbonReq = document.getElementById("ribbon-current-request");
-  const ribbonStatus = document.getElementById("ribbon-live-status");
+  const trackerText = document.getElementById("tracker-task-text");
+  const trackerVersion = document.getElementById("tracker-version-tag");
+  const dateTag = document.getElementById("flight-date-tag");
+  const destLabel = document.getElementById("flight-destination-label");
+  const chatStream = document.getElementById("chat-messages-container");
 
   if (correctionText.includes("Saturday")) {
-    currentTravelDate = "Saturday, 11 Oct";
-    if (dateBadge) dateBadge.innerText = "Saturday, 11 Oct";
-    if (ribbonReq) ribbonReq.innerText = `${currentTravelDestination} · Saturday Morning · Cheapest Flight`;
-    if (ribbonStatus) ribbonStatus.innerHTML = `Friday ➔ <span style="color: var(--brand-amber);">Updating</span> ➔ <span style="color: var(--brand-emerald);">Saturday ✓</span>`;
-
-    // Append chat messages
-    appendChatMessage(stream, "user", '"Actually Saturday."');
-    setTimeout(() => {
-      appendChatMessage(
-        stream,
-        "assistant",
-        'Updated your request without restarting the whole task. I refreshed the flights for <strong>Saturday morning</strong>. Cheapest option is still Indigo 6E-204 at <strong>₹7,200</strong>.'
-      );
-    }, 400);
-
-    if (feedback) {
-      feedback.innerHTML = `<span style="color: var(--brand-emerald); font-weight: 700;">✓ Natural Interruption handled:</span> Updated date from Friday to Saturday while preserving search context.`;
+    activeDate = "Saturday, 11 Oct";
+    if (dateTag) dateTag.innerText = "Saturday, 11 Oct";
+    if (trackerVersion) trackerVersion.innerText = "SNAPSHOT v2";
+    if (trackerText) {
+      trackerText.innerHTML = `Friday ➔ <span style="color: var(--amber);">Updating...</span> ➔ <strong style="color: var(--emerald);">Saturday ✓ ACTIVE</strong>`;
     }
 
+    appendMsg(chatStream, "user", '"Actually Saturday."');
+    setTimeout(() => {
+      appendMsg(
+        chatStream,
+        "assistant",
+        'Updated your plan to <strong>Saturday morning</strong> without restarting. Refreshed 3 flight options. Cheapest is Indigo 6E-204 at <strong>₹7,200</strong>.'
+      );
+    }, 350);
+
     // Call backend
-    fetch("/api/user_input", {
+    await fetch("/api/user_input", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ text: "Actually Saturday morning" }),
     });
 
-  } else if (correctionText.includes("Chennai")) {
-    currentTravelDestination = "Delhi";
-    if (routeHeader) routeHeader.innerText = "Chennai (MAA) ➔ Delhi (DEL)";
-    if (ribbonReq) ribbonReq.innerText = `Delhi · ${currentTravelDate} · Cheapest Flight`;
-
-    updateFlightCardRoutes("Delhi");
-
-    appendChatMessage(stream, "user", '"Actually Chennai to Delhi, not Mumbai."');
-    setTimeout(() => {
-      appendChatMessage(
-        stream,
-        "assistant",
-        'Destination updated to <strong>Delhi</strong>. Re-calculated 3 direct options for ' + currentTravelDate + '.'
-      );
-    }, 400);
-
-    if (feedback) {
-      feedback.innerHTML = `<span style="color: var(--brand-emerald); font-weight: 700;">✓ Destination Updated:</span> Replaced Mumbai query with Delhi with zero duplicate writes.`;
+  } else if (correctionText.includes("Delhi")) {
+    activeDestination = "Delhi";
+    if (destLabel) destLabel.innerText = "Chennai ➔ Delhi";
+    if (trackerVersion) trackerVersion.innerText = "SNAPSHOT v3";
+    if (trackerText) {
+      trackerText.innerHTML = `Mumbai ➔ <span style="color: var(--amber);">Updating...</span> ➔ <strong style="color: var(--emerald);">Delhi ✓ ACTIVE</strong>`;
     }
 
-    fetch("/api/user_input", {
+    const a0 = document.getElementById("airline-name-0");
+    const a1 = document.getElementById("airline-name-1");
+    const a2 = document.getElementById("airline-name-2");
+    if (a0) a0.innerText = "Indigo 6E-502 to Delhi";
+    if (a1) a1.innerText = "Air India AI-801 to Delhi";
+    if (a2) a2.innerText = "Vistara UK-920 to Delhi";
+
+    appendMsg(chatStream, "user", '"Actually Chennai to Delhi, not Mumbai."');
+    setTimeout(() => {
+      appendMsg(
+        chatStream,
+        "assistant",
+        'Destination updated to <strong>Delhi</strong>. Cleanly cancelled previous Mumbai routines and fetched direct Delhi flights.'
+      );
+    }, 350);
+
+    await fetch("/api/user_input", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ text: "Actually Chennai to Delhi, not Mumbai" }),
@@ -145,46 +156,35 @@ function triggerNaturalInterruption(correctionText) {
   }
 }
 
-function updateFlightCardRoutes(destination) {
-  const r0 = document.getElementById("flight-card-route-0");
-  const r1 = document.getElementById("flight-card-route-1");
-  const r2 = document.getElementById("flight-card-route-2");
-  if (r0) r0.innerText = `Indigo 6E-502 to ${destination}`;
-  if (r1) r1.innerText = `Air India AI-801 to ${destination}`;
-  if (r2) r2.innerText = `Vistara UK-920 to ${destination}`;
-}
-
-function appendChatMessage(container, role, htmlContent) {
+function appendMsg(container, role, html) {
   if (!container) return;
-  const bubble = document.createElement("div");
-  bubble.className = `chat-bubble ${role}`;
-  bubble.innerHTML = htmlContent;
-  container.appendChild(bubble);
+  const el = document.createElement("div");
+  el.className = `msg-bubble ${role}`;
+  el.innerHTML = html;
+  container.appendChild(el);
   container.scrollTop = container.scrollHeight;
 }
 
 // -----------------------------------------------------------------------------
-// 4. Stale Result Rejection Demonstration
+// 3. Stale Result Rejection Simulation
 // -----------------------------------------------------------------------------
-async function injectLateStaleResult() {
-  const banner = document.getElementById("stale-notice-banner");
-  if (banner) {
-    banner.classList.add("visible");
-  }
+async function triggerStaleInjectionDemo() {
+  const shield = document.getElementById("stale-shield-card");
+  if (shield) shield.classList.add("show");
 
-  const stream = document.getElementById("travel-messages-stream");
-  appendChatMessage(
-    stream,
+  const chatStream = document.getElementById("chat-messages-container");
+  appendMsg(
+    chatStream,
     "assistant",
-    `🛡️ <strong>Late Result Rejected:</strong> An older search result from your previous request arrived, but CHRONOS ignored it because your request had already changed.`
+    `🛡️ <strong>Late Result Blocked:</strong> An older flight response from your previous request arrived out-of-order, but CHRONOS discarded it because your request had already evolved.`
   );
 
-  // Call backend to trigger stale rejection event
+  // Trigger backend stale injection
   await fetch("/api/inject_stale", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
-      call_id: "call_v1_delayed_delhi",
+      call_id: "call_v1_stale_delhi",
       origin_snapshot_id: "v1",
       tool_name: "search_flights",
       output: { flight: "OLD-DEL-888", price: 9500 },
@@ -193,36 +193,37 @@ async function injectLateStaleResult() {
 }
 
 // -----------------------------------------------------------------------------
-// 5. Interactive Flight Selection & Gated 4-Phase Booking
+// 4. Flight Selection & 4-Phase Gated Commit
 // -----------------------------------------------------------------------------
-function selectFlight(index, price, time) {
-  currentSelectedFlight = {
+function selectFlightOption(index, price, time) {
+  currentFlightSelection = {
     index,
     price,
     time,
-    route: `Chennai ➔ ${currentTravelDestination}`,
+    route: `Chennai ➔ ${activeDestination}`,
   };
 
-  const cards = document.querySelectorAll(".flight-card-item");
-  cards.forEach((c, idx) => c.classList.toggle("selected", idx === index));
+  [0, 1, 2].forEach((i) => {
+    const card = document.getElementById(`ticket-card-${i}`);
+    if (card) card.classList.toggle("selected", i === index);
+  });
 
-  const descEl = document.getElementById("checkout-flight-desc");
-  const priceEl = document.getElementById("checkout-price-val");
-  const btnBookPrice = document.getElementById("btn-book-price");
+  const summary = document.getElementById("checkout-route-summary");
+  const priceDisplay = document.getElementById("checkout-price-display");
+  const btnLabel = document.getElementById("btn-price-label");
 
-  if (descEl) descEl.innerText = `${currentSelectedFlight.route} (${time} · ${currentTravelDate})`;
-  if (priceEl) priceEl.innerText = price;
-  if (btnBookPrice) btnBookPrice.innerText = price;
+  if (summary) summary.innerText = `${currentFlightSelection.route} (${time} · ${activeDate})`;
+  if (priceDisplay) priceDisplay.innerText = price;
+  if (btnLabel) btnLabel.innerText = price;
 }
 
-async function executeSafeBookingCommit() {
-  const btn = document.getElementById("btn-confirm-booking");
+async function executeGatedCommit() {
+  const btn = document.getElementById("btn-commit-booking");
   if (btn) {
-    btn.innerHTML = "⏳ Validating Idempotency Gate...";
+    btn.innerHTML = "⏳ Validating Idempotency Key (INV-3)...";
     btn.disabled = true;
   }
 
-  // Call backend step_time to trigger commit controller
   await fetch("/api/step_time", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
@@ -231,119 +232,24 @@ async function executeSafeBookingCommit() {
 
   setTimeout(() => {
     if (btn) {
-      btn.innerHTML = "✓ Booking Committed Once (Protected by INV-3)";
+      btn.innerHTML = "✓ Booking Committed Once · Zero Duplicates";
       btn.style.background = "linear-gradient(135deg, #10b981, #059669)";
     }
 
-    const stream = document.getElementById("travel-messages-stream");
-    appendChatMessage(
-      stream,
+    const chatStream = document.getElementById("chat-messages-container");
+    appendMsg(
+      chatStream,
       "assistant",
-      `🎉 <strong>Booking Confirmed!</strong> Your flight (${currentSelectedFlight.route} at ${currentSelectedFlight.time}) has been safely committed. Protected by current-state validation and strict idempotency.`
+      `🎉 <strong>Flight Confirmed!</strong> Your booking for ${currentFlightSelection.route} (${currentFlightSelection.time}) has been safely committed with idempotency protection.`
     );
-  }, 500);
+  }, 450);
 }
 
 // -----------------------------------------------------------------------------
-// 6. Mode 2: Smart Home / SmartThings Inspection & Correction
+// 5. Advanced Inspector (For Engineers) Drawer & SSE Stream
 // -----------------------------------------------------------------------------
-function correctHomeDiagnosis() {
-  const box = document.getElementById("appliance-bounding-box");
-  const label = document.getElementById("appliance-indicator-label");
-  const code = document.getElementById("appliance-code-text");
-  const stream = document.getElementById("home-messages-stream");
-  const feedback = document.getElementById("home-feedback-msg");
-
-  if (box) box.className = "detection-bounding-box power-corrected";
-  if (label) label.innerText = "Power Status Indicator (Normal)";
-  if (code) code.innerText = "Correction Applied: STATUS-OK";
-
-  appendChatMessage(stream, "user", '"No, that\'s the power light."');
-  setTimeout(() => {
-    appendChatMessage(
-      stream,
-      "assistant",
-      'Updated the diagnosis using your correction. The previous freezer diagnostic tool was cancelled, and the appliance status is marked as <strong>Healthy (Normal Power)</strong>.'
-    );
-  }, 400);
-
-  if (feedback) {
-    feedback.innerHTML = `<span style="color: var(--brand-emerald); font-weight: 700;">✓ Invalidation Applied:</span> Old freezer diagnostic cancelled. Power status verified.`;
-  }
-}
-
-function resetHomeScenario() {
-  const box = document.getElementById("appliance-bounding-box");
-  const label = document.getElementById("appliance-indicator-label");
-  const stream = document.getElementById("home-messages-stream");
-  if (box) box.className = "detection-bounding-box";
-  if (label) label.innerText = "Freezer Warning Indicator";
-  if (stream) {
-    stream.innerHTML = `
-      <div class="chat-bubble assistant">
-        "I analyzed the camera frame and detected a <strong>freezer warning light</strong>. Scheduling diagnostic tool..."
-      </div>
-    `;
-  }
-}
-
-// -----------------------------------------------------------------------------
-// 7. Mode 3: Drive / Cockpit GPS Rerouting
-// -----------------------------------------------------------------------------
-function rerouteDriveCockpit() {
-  const routePath = document.getElementById("active-route-path");
-  const routeName = document.getElementById("drive-route-name");
-  const etaVal = document.getElementById("drive-eta-val");
-  const stream = document.getElementById("drive-messages-stream");
-  const feedback = document.getElementById("drive-feedback-msg");
-
-  if (routePath) {
-    routePath.setAttribute("d", "M 30 180 Q 200 230 400 60");
-    routePath.setAttribute("stroke", "var(--brand-emerald)");
-  }
-  if (routeName) routeName.innerText = "Scenic Old Road (Detour)";
-  if (etaVal) etaVal.innerText = "48 min";
-
-  appendChatMessage(stream, "user", '"Don\'t take the highway. Use the old road."');
-  setTimeout(() => {
-    appendChatMessage(
-      stream,
-      "assistant",
-      'Route updated without continuing the outdated instruction. Highway 10 guidance cancelled, switched to <strong>Scenic Old Road</strong>.'
-    );
-  }, 400);
-
-  if (feedback) {
-    feedback.innerHTML = `<span style="color: var(--brand-emerald); font-weight: 700;">✓ Reroute Successful:</span> Outdated navigation node purged from active execution tree.`;
-  }
-}
-
-function resetDriveScenario() {
-  const routePath = document.getElementById("active-route-path");
-  const routeName = document.getElementById("drive-route-name");
-  const etaVal = document.getElementById("drive-eta-val");
-  const stream = document.getElementById("drive-messages-stream");
-
-  if (routePath) {
-    routePath.setAttribute("d", "M 30 180 Q 150 40 400 60");
-    routePath.setAttribute("stroke", "var(--brand-cyan)");
-  }
-  if (routeName) routeName.innerText = "Highway 10 Express";
-  if (etaVal) etaVal.innerText = "42 min";
-  if (stream) {
-    stream.innerHTML = `
-      <div class="chat-bubble assistant">
-        "Navigating to Airport via <strong>Highway 10</strong>. Estimated arrival at 09:22 AM."
-      </div>
-    `;
-  }
-}
-
-// -----------------------------------------------------------------------------
-// 8. Advanced Inspector Drawer & Live SSE Stream
-// -----------------------------------------------------------------------------
-function toggleInspectorDrawer() {
-  const drawer = document.getElementById("inspector-drawer-panel");
+function toggleEngineerDrawer() {
+  const drawer = document.getElementById("engineer-drawer");
   if (drawer) drawer.classList.toggle("open");
 }
 
@@ -354,9 +260,9 @@ function initSSE() {
   eventSource.onmessage = (event) => {
     try {
       const data = JSON.parse(event.data);
-      if (data.event) appendRawTelemetry(data.event);
+      if (data.event) appendRawEvent(data.event);
     } catch (e) {
-      console.error("SSE parse error", e);
+      console.error("SSE error", e);
     }
   };
 
@@ -365,9 +271,9 @@ function initSSE() {
   };
 }
 
-function appendRawTelemetry(evt) {
-  const container = document.getElementById("raw-telemetry-feed");
-  if (!container) return;
+function appendRawEvent(evt) {
+  const feed = document.getElementById("raw-sse-telemetry-feed");
+  if (!feed) return;
 
   const colorMap = {
     USER_INPUT: "#00e5ff",
@@ -380,20 +286,21 @@ function appendRawTelemetry(evt) {
   };
 
   const col = colorMap[evt.event_type] || "#94a3b8";
-  const entry = document.createElement("div");
-  entry.style.borderLeft = `2px solid ${col}`;
-  entry.style.padding = "2px 6px";
-  entry.innerHTML = `
+  const row = document.createElement("div");
+  row.style.borderLeft = `2px solid ${col}`;
+  row.style.padding = "2px 6px";
+  row.innerHTML = `
     <span style="color: ${col}; font-weight: bold;">[${evt.event_type}]</span>
     <span style="color: #64748b;">@${evt.timestamp.toFixed(2)}s (${evt.snapshot_id || "v0"})</span>:
     <span>${JSON.stringify(evt.payload || {})}</span>
   `;
-  container.prepend(entry);
+  feed.prepend(row);
 }
 
 // -----------------------------------------------------------------------------
-// Initialize on DOM Ready
+// DOM Ready Initialization
 // -----------------------------------------------------------------------------
 document.addEventListener("DOMContentLoaded", () => {
+  renderHeroTemporalSVG("v1");
   initSSE();
 });
