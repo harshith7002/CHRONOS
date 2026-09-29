@@ -3,325 +3,522 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>CHRONOS | Samsung Galaxy AI Temporal Control Plane</title>
+  <title>CHRONOS ONE | Real-Time AI That Keeps Up When You Change Your Mind</title>
   <link rel="stylesheet" href="/static/style.css">
 </head>
 <body>
 
-  <!-- Dynamic Ambient Particle Canvas -->
-  <canvas id="hero-canvas"></canvas>
+  <!-- Top Sticky Navigation Bar -->
+  <header class="navbar">
+    <div class="container nav-container">
+      <a href="#" class="nav-brand">
+        <div class="brand-badge-logo">C</div>
+        <div>
+          <span class="brand-text-name">CHRONOS ONE</span>
+          <span class="brand-edition-tag">AI ASSISTANT</span>
+        </div>
+      </a>
 
-  <div class="app-wrapper">
+      <nav class="nav-links">
+        <a href="#interactive-assistant" class="nav-link-item">Assistant</a>
+        <a href="#demo-modes" class="nav-link-item" onclick="switchMode('travel')">Travel</a>
+        <a href="#demo-modes" class="nav-link-item" onclick="switchMode('home')">Smart Home</a>
+        <a href="#demo-modes" class="nav-link-item" onclick="switchMode('drive')">Drive</a>
+        <a href="#how-it-works" class="nav-link-item">How It Works</a>
+        <a href="#benchmarks-section" class="nav-link-item">Evidence</a>
+      </nav>
 
-    <!-- TOP HUD BAR: Real-Time Telemetry & Guarantees -->
-    <header class="hud-header">
-      <div class="brand-section">
-        <div class="brand-icon-galaxy">C</div>
-        <div class="brand-title-group">
-          <h1>CHRONOS <span style="font-size: 0.75rem; color: var(--galaxy-cyan); font-weight: 500;">GALAXY AI CONTROL PLANE</span></h1>
-          <p>Theme 05: Interruptible Real-Time Agent Fabric</p>
+      <div class="nav-right-actions">
+        <div class="engine-status-pill">
+          <span class="status-dot-pulse"></span>
+          <span>Fast-Path Floor (&lt;10 µs)</span>
         </div>
-      </div>
-
-      <div class="hud-pills-row">
-        <div class="hud-pill cyan">
-          <span class="status-dot"></span>
-          <span>10 µs FAST-PATH</span>
-        </div>
-        <div class="hud-pill emerald">
-          <span class="status-dot"></span>
-          <span>INV-1: 0 STALE VIOLATIONS</span>
-        </div>
-        <div class="hud-pill emerald">
-          <span class="status-dot"></span>
-          <span>INV-3: 0 DUPLICATE COMMITS</span>
-        </div>
-        <div class="hud-pill violet">
-          <span>100% SAFETY SCORE</span>
-        </div>
-        <button class="btn-inspector-toggle" onclick="toggleDrawer()">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
-          <span>Live Ledger</span>
+        <button class="btn-secondary-pill" onclick="toggleInspectorDrawer()">
+          ⚡ Advanced Inspector
         </button>
       </div>
-    </header>
+    </div>
+  </header>
 
-    <!-- MAIN INTERACTIVE STAGE: The "Aha!" Interruption Simulator & Live DAG -->
-    <main class="stage-grid">
-      
-      <!-- LEFT COLUMN: The Interactive Interruption Lab -->
-      <section class="glass-panel">
-        <div class="panel-header">
-          <div class="panel-title-wrap">
-            <div class="panel-icon-badge">🎙️</div>
-            <div>
-              <div class="panel-title">Interactive Interruption Lab</div>
-              <div class="panel-tag">Voice & Intent Revision Sandbox</div>
-            </div>
-          </div>
-          <span class="badge-tag cyan" id="active-snap-badge">SNAPSHOT v1</span>
-        </div>
+  <div class="container">
 
-        <!-- Samsung Multi-Device Preset Switcher -->
-        <div class="device-tabs">
-          <button class="device-tab-btn active" id="tab-phone" onclick="switchPreset('phone')">📱 Galaxy S25 Ultra</button>
-          <button class="device-tab-btn" id="tab-iot" onclick="switchPreset('iot')">🏠 SmartThings IoT</button>
-          <button class="device-tab-btn" id="tab-car" onclick="switchPreset('car')">🚗 Harman Cockpit</button>
-        </div>
-
-        <!-- Voice Waveform & Speech Bubble -->
-        <div class="waveform-box">
-          <div class="waveform-header">
-            <span style="color: var(--text-muted);">Acoustic Speech Stream (Floor: <strong id="floor-state-text" style="color: var(--galaxy-cyan);">LISTENING</strong>)</span>
-            <span style="color: var(--galaxy-emerald);" id="fast-ack-timer">⚡ Fast-Ack: &lt;10 µs</span>
-          </div>
-          <div class="waveform-bars" id="wave-bars-container">
-            <div class="wave-bar active"></div>
-            <div class="wave-bar active" style="animation-delay: 0.1s;"></div>
-            <div class="wave-bar active" style="animation-delay: 0.2s;"></div>
-            <div class="wave-bar active" style="animation-delay: 0.3s;"></div>
-            <div class="wave-bar active" style="animation-delay: 0.15s;"></div>
-            <div class="wave-bar active" style="animation-delay: 0.25s;"></div>
-            <div class="wave-bar active" style="animation-delay: 0.05s;"></div>
-            <div class="wave-bar active" style="animation-delay: 0.35s;"></div>
-          </div>
-        </div>
-
-        <div class="turn-speech-bubble" id="user-speech-bubble">
-          "Find me a morning flight to Delhi under ₹10,000"
-        </div>
-
-        <!-- Step-by-Step Scenario Controller -->
-        <div class="step-navigation-box">
-          <div style="font-size: 0.75rem; color: var(--text-muted); font-weight: 600; text-transform: uppercase;">Simulation Timeline:</div>
-          <div class="step-buttons-grid">
-            <button class="step-btn active" id="btn-step-1" onclick="runScenarioStep(1)">1. Intent v1</button>
-            <button class="step-btn" id="btn-step-2" onclick="runScenarioStep(2)">2. Interrupt</button>
-            <button class="step-btn" id="btn-step-3" onclick="runScenarioStep(3)">3. Stale Injection</button>
-            <button class="step-btn" id="btn-step-4" onclick="runScenarioStep(4)">4. Safe Commit</button>
-          </div>
-
-          <div class="action-trigger-row">
-            <button class="btn-action-primary" id="btn-primary-action" onclick="advanceNextStep()">
-              ⚡ Trigger Interruption: "Actually Mumbai" ➔
-            </button>
-            <button class="btn-action-secondary" onclick="resetSimulator()">
-              ↺ Reset
-            </button>
-          </div>
-        </div>
-      </section>
-
-      <!-- RIGHT COLUMN: Live Dynamic DAG Canvas & Invariant Radar -->
-      <section class="glass-panel">
-        <div class="panel-header">
-          <div class="panel-title-wrap">
-            <div class="panel-icon-badge">⚡</div>
-            <div>
-              <div class="panel-title">Dynamic Tool DAG & Invariant Gate</div>
-              <div class="panel-tag">Zero-Stale Surgical Execution Graph</div>
-            </div>
-          </div>
-          <span class="badge-tag pass" id="commit-gate-badge">4-PHASE COMMIT: READY</span>
-        </div>
-
-        <!-- Dynamic DAG SVG Canvas -->
-        <div class="dag-canvas-container">
-          <svg id="dag-svg-canvas" viewBox="0 0 540 260">
-            <!-- Dynamic SVG elements rendered by app.js -->
-          </svg>
-        </div>
-
-        <!-- Real-Time Invariant Radar -->
-        <div class="invariant-feed-box">
-          <div class="invariant-card pass" id="card-inv-1">
-            <div>
-              <strong>INV-1: Stale Result Rejection</strong>
-              <div style="color: var(--text-muted); font-size: 0.72rem;" id="inv-1-desc">Out-of-order v1 tool response rejected automatically (0 mutations).</div>
-            </div>
-            <span class="badge-tag pass" id="inv-1-badge">ENFORCED</span>
-          </div>
-
-          <div class="invariant-card pass" id="card-inv-3">
-            <div>
-              <strong>INV-3: Strict 1-Key Idempotency</strong>
-              <div style="color: var(--text-muted); font-size: 0.72rem;" id="inv-3-desc">Protected by deterministic key <code style="color: var(--galaxy-cyan);">idem_flight_mum_v2</code>.</div>
-            </div>
-            <span class="badge-tag pass">ENFORCED</span>
-          </div>
-        </div>
-      </section>
-
-    </main>
-
-    <!-- SECTION 2: SAMSUNG MULTI-SURFACE CONTINUITY -->
-    <section class="ecosystem-section">
-      <div class="section-title-wrap">
-        <h2>Samsung Multi-Device Temporal Continuum</h2>
-        <p>Unified real-time interruptibility across Galaxy Mobile, SmartThings Vision, and Connected Cockpit.</p>
+    <!-- ----------------------------------------------------------------------
+         HERO SECTION: PRODUCT POSITIONING & CORE CONVERSATIONAL ASSISTANT
+         ---------------------------------------------------------------------- -->
+    <section class="hero-section" id="interactive-assistant">
+      <div class="hero-pill-tag">
+        <span>✨ REAL-TIME INTENT CONTROL</span>
       </div>
 
-      <div class="ecosystem-grid">
-        <!-- Surface 1: Galaxy S25 Ultra -->
-        <div class="device-card" onclick="switchPreset('phone')">
-          <div>
-            <div class="device-card-header">
-              <span class="device-badge-tag">GALAXY S25 ULTRA</span>
-              <span style="font-size: 1.2rem;">📱</span>
-            </div>
-            <h3>Speech Self-Correction & Travel</h3>
-            <p>Handles mid-utterance hesitations ("Tomorrow 9 AM... wait, Friday 2 PM") with selective slot mutation and zero re-planning delay.</p>
-          </div>
-          <div class="device-guarantee-pill">
-            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><polyline points="9 12 11 14 15 10"/></svg>
-            <span>&lt;150 µs Surgical Slot Mutation</span>
-          </div>
+      <h1 class="hero-heading">
+        An AI assistant that keeps up<br>when you change your mind.
+      </h1>
+      
+      <div class="hero-tagline-motto">Plan. Correct. Interrupt. Continue.</div>
+      <p class="hero-subtext">
+        Powered by the CHRONOS temporal control plane — keeping execution 100% consistent across late async responses, mid-stream edits, and irreversible bookings.
+      </p>
+
+      <!-- Conversational UI Card -->
+      <div class="assistant-card-main">
+        <div class="chat-input-wrapper">
+          <input 
+            type="text" 
+            id="main-user-input"
+            class="chat-text-input" 
+            placeholder="Try: Plan a trip to Mumbai Friday morning and find the cheapest flight..."
+            value="Plan a trip to Mumbai Friday morning and find the cheapest flight"
+          />
+          <button class="btn-mic-action" id="btn-mic-trigger" onclick="simulateSpeechInput()">
+            🎙️ <span>Speak</span>
+          </button>
+          <button class="btn-send-action" onclick="handleMainInputSend()">
+            Send ➔
+          </button>
         </div>
 
-        <!-- Surface 2: SmartThings Vision -->
-        <div class="device-card" onclick="switchPreset('iot')">
-          <div>
-            <div class="device-card-header">
-              <span class="device-badge-tag">SMARTTHINGS VISION</span>
-              <span style="font-size: 1.2rem;">🏠</span>
-            </div>
-            <h3>Appliance Camera Grounding</h3>
-            <p>Grounds diagnostics in live camera frames. When the user pans camera from Washer to Fridge, obsolete diagnostic tools abort instantly.</p>
-          </div>
-          <div class="device-guarantee-pill">
-            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><polyline points="9 12 11 14 15 10"/></svg>
-            <span>Multimodal Vision DAG Invalidation</span>
-          </div>
+        <!-- Quick Suggestions -->
+        <div class="quick-chips-row">
+          <span class="quick-chip-label">Try asking:</span>
+          <button class="prompt-chip-btn" onclick="applyQuickPrompt('Plan a trip to Mumbai Friday morning and find the cheapest flight')">
+            ✈️ "Trip to Mumbai Friday morning"
+          </button>
+          <button class="prompt-chip-btn" onclick="applyQuickPrompt('Actually make that Saturday morning')">
+            ⚡ "Actually Saturday morning"
+          </button>
+          <button class="prompt-chip-btn" onclick="applyQuickPrompt('Actually Chennai, not Mumbai')">
+            🔄 "Actually Chennai, not Mumbai"
+          </button>
         </div>
 
-        <!-- Surface 3: Harman Cockpit -->
-        <div class="device-card" onclick="switchPreset('car')">
-          <div>
-            <div class="device-card-header">
-              <span class="device-badge-tag">HARMAN DIGITAL COCKPIT</span>
-              <span style="font-size: 1.2rem;">🚗</span>
-            </div>
-            <h3>In-Car Dynamic Rerouting</h3>
-            <p>Immediately halts stale GPS routing when the driver issues a spoken detour mid-execution, preventing outdated turns.</p>
+        <!-- Live Status Ribbon -->
+        <div class="live-status-ribbon">
+          <div class="status-ribbon-col">
+            <span class="ribbon-col-title">Current Request</span>
+            <span class="ribbon-col-val" id="ribbon-current-request">Mumbai · Friday Morning · Cheapest Flight</span>
           </div>
-          <div class="device-guarantee-pill">
-            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><polyline points="9 12 11 14 15 10"/></svg>
-            <span>Zero Outdated Cockpit Commands</span>
+          <div class="status-ribbon-col">
+            <span class="ribbon-col-title">Current Plan</span>
+            <span class="ribbon-col-val" id="ribbon-current-plan" style="color: var(--brand-cyan);">Search flights ➔ Compare prices ➔ Gated Booking</span>
+          </div>
+          <div class="status-ribbon-col">
+            <span class="ribbon-col-title">Live Status</span>
+            <span class="ribbon-col-val" id="ribbon-live-status" style="color: var(--brand-emerald);">✓ Active & Protected</span>
           </div>
         </div>
       </div>
     </section>
 
-    <!-- SECTION 3: WAR ROOM & LATENCY WATERFALL -->
-    <section class="ecosystem-section">
-      <div class="section-title-wrap">
-        <h2>Adversarial War Room & Microsecond Latency Waterfall</h2>
-        <p>Empirically validated across 2,000 adversarial executions with zero invariant violations.</p>
-      </div>
-
-      <div class="benchmark-grid">
-        <!-- Left: Microsecond Latency Table -->
-        <div class="glass-panel">
-          <div class="panel-header">
-            <div class="panel-title-wrap">
-              <div class="panel-icon-badge">⏱️</div>
-              <div>
-                <div class="panel-title">Microsecond Latency Waterfall</div>
-                <div class="panel-tag">N = 1,000 Local Control-Plane Iterations</div>
-              </div>
-            </div>
-            <button class="btn-action-secondary" style="padding: 6px 12px; font-size: 0.75rem;" onclick="triggerBenchmarkRun()">Re-Benchmark</button>
-          </div>
-
-          <table class="latency-table">
-            <thead>
-              <tr>
-                <th>Operation</th>
-                <th>Median (p50)</th>
-                <th>p95</th>
-                <th>p99</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td><strong>Fast-Path Floor ACK</strong></td>
-                <td style="color: var(--galaxy-cyan);"><strong>0.007 ms (7 µs)</strong></td>
-                <td>0.027 ms</td>
-                <td>0.082 ms</td>
-              </tr>
-              <tr>
-                <td><strong>Idempotency Check</strong></td>
-                <td style="color: var(--galaxy-cyan);"><strong>0.001 ms (1 µs)</strong></td>
-                <td>0.001 ms</td>
-                <td>0.001 ms</td>
-              </tr>
-              <tr>
-                <td><strong>Snapshot Evolution</strong></td>
-                <td style="color: var(--galaxy-cyan);"><strong>0.020 ms (20 µs)</strong></td>
-                <td>0.036 ms</td>
-                <td>0.130 ms</td>
-              </tr>
-              <tr>
-                <td><strong>Interruption Cancellation</strong></td>
-                <td style="color: var(--galaxy-cyan);"><strong>0.139 ms (139 µs)</strong></td>
-                <td>0.396 ms</td>
-                <td>0.824 ms</td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-
-        <!-- Right: 2,000-Run Adversarial Scorecard -->
-        <div class="glass-panel">
-          <div class="panel-header">
-            <div class="panel-title-wrap">
-              <div class="panel-icon-badge">🛡️</div>
-              <div>
-                <div class="panel-title">2,000-Run Adversarial Matrix</div>
-                <div class="panel-tag">20 Failure Modes × 100 Randomized Seeds</div>
-              </div>
-            </div>
-            <span class="badge-tag pass">SCORE: 100.0%</span>
-          </div>
-
-          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 16px;">
-            <div style="background: rgba(255,255,255,0.02); padding: 12px; border-radius: var(--radius-md); border: 1px solid var(--glass-border);">
-              <div style="font-size: 1.5rem; font-weight: 800; color: var(--galaxy-emerald);">0</div>
-              <div style="font-size: 0.72rem; color: var(--text-muted);">Stale Contaminations (INV-1)</div>
-            </div>
-            <div style="background: rgba(255,255,255,0.02); padding: 12px; border-radius: var(--radius-md); border: 1px solid var(--glass-border);">
-              <div style="font-size: 1.5rem; font-weight: 800; color: var(--galaxy-emerald);">0</div>
-              <div style="font-size: 0.72rem; color: var(--text-muted);">Duplicate Commits (INV-3)</div>
-            </div>
-          </div>
-
-          <button class="btn-action-primary" style="width: 100%;" onclick="runAdversarialMatrix()">
-            ▶ Execute 2,000-Run Adversarial Matrix
+    <!-- ----------------------------------------------------------------------
+         FLAGSHIP PRACTICAL EXPERIENCES (THREE MODES)
+         ---------------------------------------------------------------------- -->
+    <section id="demo-modes" style="margin-bottom: 40px;">
+      
+      <!-- Mode Switcher Tabs -->
+      <div class="mode-switcher-container">
+        <div class="mode-switcher-tabs">
+          <button class="mode-tab-btn active" id="tab-travel" onclick="switchMode('travel')">
+            ✈️ TRAVEL ASSISTANT
+          </button>
+          <button class="mode-tab-btn" id="tab-home" onclick="switchMode('home')">
+            🏠 SMART HOME VISION
+          </button>
+          <button class="mode-tab-btn" id="tab-drive" onclick="switchMode('drive')">
+            🚗 IN-CAR DRIVE
           </button>
         </div>
       </div>
+
+      <!-- ====================================================================
+           MODE 1: TRAVEL ASSISTANT (CONVERSATION + FLIGHTS + INTERRUPTION)
+           ==================================================================== -->
+      <div class="interactive-app-view active" id="view-travel">
+        <div class="travel-demo-grid">
+          
+          <!-- Left: Dialog Stream & Natural Interruption Deck -->
+          <div class="assistant-dialog-panel">
+            <div>
+              <div style="font-size: 0.8rem; font-weight: 700; color: var(--text-dim); text-transform: uppercase; margin-bottom: 12px;">
+                Live Conversational Stream
+              </div>
+
+              <div class="dialog-messages-stream" id="travel-messages-stream">
+                <div class="chat-bubble user">
+                  "Find me the cheapest flight to Mumbai Friday morning."
+                </div>
+                <div class="chat-bubble assistant">
+                  "I found 3 flight options from Chennai to Mumbai for Friday morning. The cheapest is Indigo 6E-204 at <strong>₹7,200</strong>."
+                </div>
+              </div>
+            </div>
+
+            <!-- Interruption & Stale Simulation Controls -->
+            <div class="interrupt-action-box">
+              <div class="interrupt-box-title">
+                ⚡ Test Natural Mid-Stream Interruption:
+              </div>
+              <div class="interrupt-buttons-row">
+                <button class="btn-interrupt-trigger" onclick="triggerNaturalInterruption('Actually Saturday')">
+                  🗣️ "Actually Saturday"
+                </button>
+                <button class="btn-interrupt-trigger" onclick="triggerNaturalInterruption('Actually Chennai, not Mumbai')">
+                  🗣️ "Actually Chennai, not Mumbai"
+                </button>
+                <button class="btn-stale-inject" onclick="injectLateStaleResult()">
+                  ⚠️ Simulate Late Delayed Result
+                </button>
+              </div>
+              <div style="font-size: 0.75rem; color: var(--text-muted);" id="interruption-feedback-text">
+                Click any button above to see CHRONOS surgically update the plan without crashing or restarting from scratch.
+              </div>
+            </div>
+          </div>
+
+          <!-- Right: Interactive Flight Options & Booking Checkout -->
+          <div class="flight-results-panel">
+            <div class="flight-panel-header">
+              <div>
+                <span class="flight-panel-title">Available Flights</span>
+                <span style="font-size: 0.78rem; color: var(--text-muted); margin-left: 8px;" id="flight-route-header">Chennai (MAA) ➔ Mumbai (BOM)</span>
+              </div>
+              <span class="flight-date-tag" id="flight-date-badge">Friday, 10 Oct</span>
+            </div>
+
+            <!-- Flight Cards List -->
+            <div class="flight-cards-list" id="flight-cards-container">
+              <!-- Flight 1 -->
+              <div class="flight-card-item selected" onclick="selectFlight(0, '₹7,200', '08:10')">
+                <div>
+                  <div class="flight-times">08:10 ➔ 10:15 <span style="font-size: 0.75rem; color: var(--text-dim);">(2h 05m)</span></div>
+                  <div class="flight-route" id="flight-card-route-0">Indigo 6E-204 · Direct</div>
+                </div>
+                <div style="text-align: right;">
+                  <div class="flight-price" id="flight-price-0">₹7,200</div>
+                  <button class="btn-select-flight">Select</button>
+                </div>
+              </div>
+
+              <!-- Flight 2 -->
+              <div class="flight-card-item" onclick="selectFlight(1, '₹7,850', '09:40')">
+                <div>
+                  <div class="flight-times">09:40 ➔ 11:55 <span style="font-size: 0.75rem; color: var(--text-dim);">(2h 15m)</span></div>
+                  <div class="flight-route" id="flight-card-route-1">Air India AI-582 · Direct</div>
+                </div>
+                <div style="text-align: right;">
+                  <div class="flight-price" id="flight-price-1">₹7,850</div>
+                  <button class="btn-select-flight">Select</button>
+                </div>
+              </div>
+
+              <!-- Flight 3 -->
+              <div class="flight-card-item" onclick="selectFlight(2, '₹8,100', '06:25')">
+                <div>
+                  <div class="flight-times">06:25 ➔ 08:35 <span style="font-size: 0.75rem; color: var(--text-dim);">(2h 10m)</span></div>
+                  <div class="flight-route" id="flight-card-route-2">Akasa Air QP-1102 · Direct</div>
+                </div>
+                <div style="text-align: right;">
+                  <div class="flight-price" id="flight-price-2">₹8,100</div>
+                  <button class="btn-select-flight">Select</button>
+                </div>
+              </div>
+            </div>
+
+            <!-- Stale Result Protected Banner -->
+            <div class="stale-notice-card" id="stale-notice-banner">
+              <div class="stale-notice-title">✓ Current Plan Protected</div>
+              <div class="stale-notice-body">
+                An older search result arrived. CHRONOS ignored it because your request had already changed.
+              </div>
+              <div class="technical-chip-expand">
+                Technical log: STALE_RESULT_REJECTED (v1 response discarded, active snapshot is v2)
+              </div>
+            </div>
+
+            <!-- Safe Gated 4-Phase Booking Card -->
+            <div class="booking-checkout-panel visible" id="booking-checkout-box">
+              <div class="checkout-header">Confirm Your Booking</div>
+              <div class="checkout-details-row">
+                <span id="checkout-flight-desc">Chennai ➔ Mumbai (08:10)</span>
+                <strong style="color: var(--brand-emerald);" id="checkout-price-val">₹7,200</strong>
+              </div>
+              <button class="btn-confirm-commit" id="btn-confirm-booking" onclick="executeSafeBookingCommit()">
+                Book for <span id="btn-book-price">₹7,200</span> ➔
+              </button>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- ====================================================================
+           MODE 2: SMART HOME / SMARTTHINGS (CAMERA INSPECTION & CORRECTION)
+           ==================================================================== -->
+      <div class="interactive-app-view" id="view-home">
+        <div class="smartthings-stage-card">
+          
+          <!-- Camera Inspection Viewport -->
+          <div class="camera-preview-box">
+            <div class="camera-hud-overlay">
+              <span>● BESPOKE APPLIANCE CAM #04</span>
+              <span id="cam-fps-text">60 FPS · 1080P</span>
+            </div>
+            
+            <div class="detection-bounding-box" id="appliance-bounding-box">
+              <div style="font-size: 2rem; margin-bottom: 6px;">🧊</div>
+              <div style="font-size: 0.85rem; font-weight: 700;" id="appliance-indicator-label">Freezer Warning Indicator</div>
+              <div style="font-size: 0.72rem; color: var(--text-dim);" id="appliance-code-text">Detection ID: CAM-W401</div>
+            </div>
+          </div>
+
+          <!-- Dialog & Live Self-Correction -->
+          <div style="display: flex; flex-direction: column; justify-content: space-between;">
+            <div>
+              <div style="font-size: 0.8rem; font-weight: 700; color: var(--brand-cyan); text-transform: uppercase; margin-bottom: 10px;">
+                SmartThings Multimodal Grounding
+              </div>
+              
+              <div class="dialog-messages-stream" id="home-messages-stream">
+                <div class="chat-bubble assistant">
+                  "I analyzed the camera frame and detected a <strong>freezer warning light</strong>. Scheduling diagnostic tool..."
+                </div>
+              </div>
+            </div>
+
+            <div class="interrupt-action-box">
+              <div class="interrupt-box-title" style="color: var(--brand-cyan);">
+                🗣️ Correct the Assistant Mid-Diagnosis:
+              </div>
+              <div class="interrupt-buttons-row">
+                <button class="btn-interrupt-trigger" style="border-color: var(--brand-cyan); color: var(--brand-cyan);" onclick="correctHomeDiagnosis()">
+                  "No, that's the power light."
+                </button>
+                <button class="btn-secondary-pill" onclick="resetHomeScenario()">
+                  ↺ Reset Camera
+                </button>
+              </div>
+              <div style="font-size: 0.75rem; color: var(--text-muted);" id="home-feedback-msg">
+                See how the diagnostic tool cancels immediately and applies the new interpretation without starting over.
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- ====================================================================
+           MODE 3: DRIVE / HARMAN COCKPIT (DYNAMIC GPS REROUTING)
+           ==================================================================== -->
+      <div class="interactive-app-view" id="view-drive">
+        <div class="cockpit-stage-card">
+          
+          <!-- Cockpit Vector Map Viewport -->
+          <div class="cockpit-map-viewport">
+            <svg viewBox="0 0 450 250" style="width: 100%; height: 100%;">
+              <!-- Background Roads Grid -->
+              <path d="M 30 180 Q 150 40 400 60" fill="none" stroke="rgba(255,255,255,0.08)" stroke-width="12" />
+              <path d="M 30 180 Q 200 230 400 60" fill="none" stroke="rgba(255,255,255,0.08)" stroke-width="12" />
+
+              <!-- Active Route Path -->
+              <path id="active-route-path" d="M 30 180 Q 150 40 400 60" fill="none" stroke="var(--brand-cyan)" stroke-width="6" stroke-linecap="round" />
+
+              <!-- Vehicle Indicator -->
+              <circle cx="30" cy="180" r="8" fill="#fff" stroke="var(--brand-blue)" stroke-width="3"/>
+              <!-- Destination Pin -->
+              <circle cx="400" cy="60" r="10" fill="var(--brand-rose)" />
+              <text x="400" y="40" fill="#fff" font-size="10" font-weight="700" text-anchor="middle">AIRPORT T2</text>
+            </svg>
+
+            <div style="position: absolute; bottom: 12px; left: 16px; background: rgba(0,0,0,0.7); padding: 6px 12px; border-radius: var(--radius-sm); font-size: 0.75rem;">
+              Route: <strong id="drive-route-name" style="color: var(--brand-cyan);">Highway 10 Express</strong> · ETA: <strong id="drive-eta-val">42 min</strong>
+            </div>
+          </div>
+
+          <!-- Spoken Navigation Guidance & Detour Interruption -->
+          <div style="display: flex; flex-direction: column; justify-content: space-between;">
+            <div>
+              <div style="font-size: 0.8rem; font-weight: 700; color: var(--brand-cyan); text-transform: uppercase; margin-bottom: 10px;">
+                Harman Cockpit Voice Navigation
+              </div>
+
+              <div class="dialog-messages-stream" id="drive-messages-stream">
+                <div class="chat-bubble assistant">
+                  "Navigating to Airport via <strong>Highway 10</strong>. Estimated arrival at 09:22 AM."
+                </div>
+              </div>
+            </div>
+
+            <div class="interrupt-action-box">
+              <div class="interrupt-box-title" style="color: var(--brand-amber);">
+                🗣️ Issue Spoken Detour:
+              </div>
+              <div class="interrupt-buttons-row">
+                <button class="btn-interrupt-trigger" onclick="rerouteDriveCockpit()">
+                  "Don't take the highway. Use the old road."
+                </button>
+                <button class="btn-secondary-pill" onclick="resetDriveScenario()">
+                  ↺ Reset Route
+                </button>
+              </div>
+              <div style="font-size: 0.75rem; color: var(--text-muted);" id="drive-feedback-msg">
+                Route updated without continuing the outdated instruction or calculating redundant GPS nodes.
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+    </section>
+
+    <!-- ----------------------------------------------------------------------
+         UNIFIED EXPLANATION: HOW CHRONOS WORKS UNDER THE HOOD
+         ---------------------------------------------------------------------- -->
+    <section class="how-it-works-section" id="how-it-works">
+      <div class="section-header-center">
+        <h2 class="section-title-large">All three experiences use the same temporal control layer.</h2>
+        <p class="section-subtitle-text">
+          When reality changes mid-stream, CHRONOS guarantees your AI agent never gets confused, leaks stale results, or double-commits actions.
+        </p>
+      </div>
+
+      <!-- 7-Step Lifecycle Diagram -->
+      <div class="execution-flow-bar">
+        <div class="flow-node">
+          <div class="flow-node-num">1</div>
+          <div class="flow-node-text">USER SPEAKS</div>
+        </div>
+        <div class="flow-arrow-sep">➔</div>
+        <div class="flow-node">
+          <div class="flow-node-num">2</div>
+          <div class="flow-node-text">UNDERSTAND</div>
+        </div>
+        <div class="flow-arrow-sep">➔</div>
+        <div class="flow-node">
+          <div class="flow-node-num">3</div>
+          <div class="flow-node-text">EXECUTE</div>
+        </div>
+        <div class="flow-arrow-sep">➔</div>
+        <div class="flow-node" style="color: var(--brand-amber);">
+          <div class="flow-node-num" style="border-color: var(--brand-amber); color: var(--brand-amber);">4</div>
+          <div class="flow-node-text" style="color: var(--brand-amber);">USER CHANGES MIND</div>
+        </div>
+        <div class="flow-arrow-sep">➔</div>
+        <div class="flow-node">
+          <div class="flow-node-num">5</div>
+          <div class="flow-node-text">UPDATE PLAN</div>
+        </div>
+        <div class="flow-arrow-sep">➔</div>
+        <div class="flow-node" style="color: var(--brand-emerald);">
+          <div class="flow-node-num" style="border-color: var(--brand-emerald); color: var(--brand-emerald);">6</div>
+          <div class="flow-node-text" style="color: var(--brand-emerald);">PROTECT STATE</div>
+        </div>
+        <div class="flow-arrow-sep">➔</div>
+        <div class="flow-node">
+          <div class="flow-node-num">7</div>
+          <div class="flow-node-text">CONTINUE</div>
+        </div>
+      </div>
+
+      <!-- 4 Core Pillars Grid -->
+      <div class="pillars-grid">
+        <div class="pillar-card">
+          <div class="pillar-icon-badge">📌</div>
+          <h4>1. Version Intent</h4>
+          <p>Every user thought and turn creates an immutable snapshot. Nothing is overwritten blindly.</p>
+        </div>
+
+        <div class="pillar-card">
+          <div class="pillar-icon-badge">✂️</div>
+          <h4>2. Selective Cancellation</h4>
+          <p>Only obsolete tools are cancelled. Reusable background results are safely preserved.</p>
+        </div>
+
+        <div class="pillar-card">
+          <div class="pillar-icon-badge">🛡️</div>
+          <h4>3. Stale-Result Rejection</h4>
+          <p>Late out-of-order network responses are discarded immediately by comparing snapshot lineage.</p>
+        </div>
+
+        <div class="pillar-card">
+          <div class="pillar-icon-badge">🔒</div>
+          <h4>4. Safe 4-Phase Commit</h4>
+          <p>Irreversible writes and payments require explicit gate validation and strict 1-key idempotency.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ----------------------------------------------------------------------
+         EVIDENCE & BENCHMARKS SECTION
+         ---------------------------------------------------------------------- -->
+    <section class="advanced-benchmarks-section" id="benchmarks-section">
+      <div class="section-header-center">
+        <h2 class="section-title-large">Empirically Verified Performance</h2>
+        <p class="section-subtitle-text">
+          Validated against a 2,000-run adversarial benchmark across 20 failure categories.
+        </p>
+      </div>
+
+      <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px;">
+        <div class="pillar-card" style="text-align: center;">
+          <div style="font-size: 2.2rem; font-weight: 800; color: var(--brand-emerald); margin-bottom: 4px;">0</div>
+          <div style="font-weight: 700; margin-bottom: 4px;">Stale Violations</div>
+          <p>Zero state contaminations under out-of-order responses.</p>
+        </div>
+
+        <div class="pillar-card" style="text-align: center;">
+          <div style="font-size: 2.2rem; font-weight: 800; color: var(--brand-emerald); margin-bottom: 4px;">0</div>
+          <div style="font-weight: 700; margin-bottom: 4px;">Duplicate Commits</div>
+          <p>Strict idempotency guarantees at most 1 irreversible write.</p>
+        </div>
+
+        <div class="pillar-card" style="text-align: center;">
+          <div style="font-size: 2.2rem; font-weight: 800; color: var(--brand-cyan); margin-bottom: 4px;">0.007 ms</div>
+          <div style="font-weight: 700; margin-bottom: 4px;">Fast-Path Floor ACK</div>
+          <p>Acoustic debouncing releases the floor in 7 microseconds.</p>
+        </div>
+      </div>
     </section>
 
   </div>
 
-  <!-- SLIDE-OVER TELEMETRY DRAWER -->
-  <div class="inspector-drawer" id="inspector-drawer">
-    <div class="drawer-header">
-      <div style="display: flex; align-items: center; gap: 8px;">
-        <span style="color: var(--galaxy-cyan); font-weight: 700;">●</span>
-        <strong>Append-Only Event Ledger</strong>
+  <!-- ----------------------------------------------------------------------
+       ADVANCED INSPECTOR SLIDE-OVER DRAWER (TECHNICAL LAYER)
+       ---------------------------------------------------------------------- -->
+  <aside class="inspector-drawer-panel" id="inspector-drawer-panel">
+    <div class="drawer-top-bar">
+      <div>
+        <strong style="color: var(--brand-cyan);">⚡ Advanced Technical Inspector</strong>
+        <div style="font-size: 0.72rem; color: var(--text-dim);">Live Temporal Control Plane & Event Stream</div>
       </div>
-      <button class="btn-inspector-toggle" onclick="toggleDrawer()">✕ Close</button>
+      <button class="btn-secondary-pill" onclick="toggleInspectorDrawer()">✕ Close</button>
     </div>
-    <div class="drawer-body">
-      <div style="font-size: 0.75rem; color: var(--text-muted);">
-        Real-Time Server-Sent Events (SSE) Audit Trail
+
+    <div class="drawer-content-scroll">
+      <!-- 7 Invariants Checklist -->
+      <div style="background: rgba(0,0,0,0.3); border: 1px solid var(--border-subtle); border-radius: var(--radius-sm); padding: 14px;">
+        <div style="font-size: 0.78rem; font-weight: 700; color: #fff; margin-bottom: 8px;">The 7 CHRONOS Invariants:</div>
+        <div style="font-size: 0.72rem; color: var(--text-secondary); display: flex; flex-direction: column; gap: 4px;">
+          <div><span style="color: var(--brand-emerald);">✓ INV-1:</span> Stale results cannot mutate active intent.</div>
+          <div><span style="color: var(--brand-emerald);">✓ INV-2:</span> Only active snapshot can commit writes.</div>
+          <div><span style="color: var(--brand-emerald);">✓ INV-3:</span> 1 Idempotency key permits at most 1 commit.</div>
+          <div><span style="color: var(--brand-emerald);">✓ INV-4:</span> Selective DAG dependency cascade.</div>
+          <div><span style="color: var(--brand-emerald);">✓ INV-5:</span> Superseded branches cannot write state.</div>
+          <div><span style="color: var(--brand-emerald);">✓ INV-6:</span> Unconfirmed writes strictly blocked.</div>
+          <div><span style="color: var(--brand-emerald);">✓ INV-7:</span> Historical snapshots strictly immutable.</div>
+        </div>
       </div>
-      <div class="telemetry-log-stream" id="telemetry-stream">
-        <!-- Live log entries will append here -->
+
+      <!-- Raw Event Stream Telemetry -->
+      <div>
+        <div style="font-size: 0.78rem; font-weight: 700; color: var(--text-muted); margin-bottom: 6px;">
+          Live Event-Sourced Ledger (SSE):
+        </div>
+        <div class="raw-telemetry-feed" id="raw-telemetry-feed">
+          <!-- Live events streamed here -->
+        </div>
       </div>
     </div>
-  </div>
+  </aside>
 
   <script src="/static/app.js"></script>
 </body>
