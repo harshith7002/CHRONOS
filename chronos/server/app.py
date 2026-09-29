@@ -1,6 +1,6 @@
 """
 CHRONOS FastAPI Server
-Provides REST endpoints and Server-Sent Events (SSE) for the real-time control plane UI.
+Provides REST endpoints, Server-Sent Events (SSE), and WebSockets for the real-time control plane UI.
 """
 
 from __future__ import annotations
@@ -8,24 +8,43 @@ import asyncio
 import json
 import os
 from pathlib import Path
-from typing import Any, Dict, Optional
+from typing import Any, Dict, List, Optional
 from fastapi import FastAPI, Request
 from fastapi.responses import HTMLResponse, StreamingResponse, JSONResponse
 from fastapi.staticfiles import StaticFiles
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 
 from chronos.clock.virtual_clock import VirtualClock
 from chronos.engine.chronos_agent import ChronosAgent
 from chronos.evaluation.harness import ReplayHarness
 from chronos.evaluation.metrics import MetricsCollector
 from chronos.evaluation.benchmarks import LatencyBenchmark
+from chronos.providers import (
+    BaseLLMProvider,
+    LLMMessage,
+    OpenAIProvider,
+    AnthropicProvider,
+    GeminiProvider,
+    OllamaProvider,
+    MCPClient,
+    ProviderConfig,
+    ProviderType,
+)
+from chronos.voice import VoiceFloorManager, FloorState
+from chronos.persistence import SQLiteStore
 
-app = FastAPI(title="CHRONOS Temporal Control Plane", version="1.0.0")
+app = FastAPI(title="CHRONOS Temporal Control Plane", version="2.0.0")
 
 # Shared global agent instance
 clock = VirtualClock(initial_time=0.0, mode="realtime", time_scale=1.0)
 agent = ChronosAgent(clock=clock)
 replay_harness = ReplayHarness(agent=agent)
+sqlite_store = SQLiteStore(db_path="chronos_ledger.db")
+voice_floor = VoiceFloorManager(
+    on_interruption=lambda token, lvl: agent.process_user_input(token),
+    on_final_turn=lambda text: agent.process_user_input(text),
+)
+mcp_client = MCPClient()
 
 # Static files directory
 STATIC_DIR = Path(__file__).parent / "static"
@@ -46,6 +65,19 @@ class StaleInjectRequest(BaseModel):
     origin_snapshot_id: str = "v1"
     tool_name: str = "search_flights"
     output: Dict[str, Any] = {"flight_id": "DEL-999", "price": 5000, "dest": "Delhi"}
+
+
+class MCPRegisterRequest(BaseModel):
+    name: str
+    description: str
+    parameters: Dict[str, Any] = Field(default_factory=dict)
+    execution_class: Optional[str] = None
+
+
+class LLMStreamRequest(BaseModel):
+    prompt: str
+    provider: str = "openai"  # "openai", "anthropic", "gemini", "ollama", "mock"
+    model_name: Optional[str] = None
 
 
 @app.get("/", response_class=HTMLResponse)
@@ -156,6 +188,30 @@ async def reset():
     return {"status": "ok", "state": agent.get_state_summary()}
 
 
+# ---- Phase 1 Provider & MCP Endpoints ----
+
+@app.post("/api/mcp/register")
+async def register_mcp_tool(req: MCPRegisterRequest):
+    tool = mcp_client.register_mcp_tool_manually(
+        name=req.name,
+        description=req.description,
+        parameters=req.parameters,
+        execution_class=req.execution_class,
+    )
+    mcp_client.export_to_chronos_registry(agent.registry)
+    return {"status": "ok", "tool": tool.model_dump(), "registered_count": len(agent.registry.list_tools())}
+
+
+@app.get("/api/mcp/tools")
+async def list_mcp_tools():
+    return {"status": "ok", "tools": [t.model_dump() for t in agent.registry.list_tools()]}
+
+
+@app.get("/api/persistence/snapshots")
+async def list_persisted_snapshots():
+    return {"status": "ok", "snapshots": sqlite_store.list_snapshots()}
+
+
 @app.get("/api/events/stream")
 async def event_stream(request: Request):
     """Server-Sent Events stream for real-time telemetry updates."""
@@ -164,6 +220,7 @@ async def event_stream(request: Request):
 
         def listener(evt):
             try:
+                sqlite_store.append_event(evt)
                 loop = asyncio.get_event_loop()
                 loop.call_soon_threadsafe(q.put_nowait, evt)
             except Exception:
